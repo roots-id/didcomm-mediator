@@ -2,7 +2,7 @@
 
 As a general principle, the Mediator implements latest specifications and protocols from [DIF](https://identity.foundation) and [Aries Interoperability Profiles](https://github.com/hyperledger/aries-rfcs/blob/main/concepts/0302-aries-interop-profile/README.md), in particular:
 * [DIF DIDComm Messaging V2](https://identity.foundation/didcomm-messaging/spec/)
-* [Aries RFC 0434: Out-of-Band Protocol 1.1](https://github.com/hyperledger/aries-rfcs/tree/bed4989dd6517f7a9de3696800e57e4c6ef49231/features/0434-outofband)
+* [DIDComm v2 Out-of-Band Protocol 2.0](https://identity.foundation/didcomm-messaging/spec/#out-of-band-messages)
 * ~~[Aries RFC 0160: Connection Protocol](https://github.com/hyperledger/aries-rfcs/blob/main/features/0160-connection-protocol/README.md)~~  replaced by Aries RFC 0023
 * ~~[Aries RFC 0023: DID Exchange Protocol 1.0](https://github.com/hyperledger/aries-rfcs/tree/b3a3942ef052039e73cd23d847f42947f8287da2/features/0023-did-exchange)~~ not needed in DIDComm v2
 * [Aries RFC 0211: Mediator Coordination Protocol](https://github.com/hyperledger/aries-rfcs/tree/b3a3942ef052039e73cd23d847f42947f8287da2/features/0211-route-coordination) --> Publishing v2

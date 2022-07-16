@@ -18,11 +18,11 @@ async def process_mediator_message(unpack_msg: UnpackResult, remote_did, local_d
     elif unpack_msg.message.type == "https://didcomm.org/coordinate-mediation/2.0/keylist-update":
             return await process_keylist_update(unpack_msg, remote_did, local_did, from_prior)
     elif unpack_msg.message.type == "https://didcomm.org/coordinate-mediation/2.0/keylist-query":
-            return await process_keylist_update(unpack_msg, remote_did, local_did, from_prior)
+            return await process_keylist_query(unpack_msg, remote_did, local_did, from_prior)
 
 async def process_mediate_request(unpack_msg: UnpackResult, remote_did, local_did, from_prior: FromPrior):
     # check if already a connection and deny
-    if get_connection(remote_did)["isMediation"]:
+    if "isMediation" in get_connection(remote_did) and get_connection(remote_did)["isMediation"]:
         response_message = Message(
         id=str(uuid.uuid4()),
         type="https://didcomm.org/coordinate-mediation/2.0/mediate-deny",
@@ -93,10 +93,11 @@ async def process_keylist_update(unpack_msg: UnpackResult, remote_did, local_did
 
 async def process_keylist_query(unpack_msg: UnpackResult, remote_did, local_did, from_prior: FromPrior):
     # TODO ADD PAGINATION
-    keylist = get_connection(remote_did)["keylist"]
+    connection = get_connection(remote_did)
+    keylist = connection["keylist"] if "keylist" in connection else []
     response_message = Message(
         id=str(uuid.uuid4()),
-        type="https://didcomm.org/coordinate-mediation/2.0/mediate-grant",
+        type="https://didcomm.org/coordinate-mediation/2.0/keylist",
         body={
             "keys": [{"recipient_key": k} for k in keylist]
         },
