@@ -6,6 +6,8 @@ from protocols.trust_ping import process_trust_ping
 from protocols.basic_message import process_basic_message
 from protocols.question_answer import process_question
 from protocols.mediator_coordination import process_mediator_message
+from protocols.routing import process_forward_message
+from protocols.pickup import process_pickup_message
 from db_utils import create_connection, get_connection, update_connection
 
 async def message_routing(unpack_msg:UnpackResult):
@@ -43,5 +45,8 @@ async def message_routing(unpack_msg:UnpackResult):
             return await process_basic_message(unpack_msg, sender_did, connection_did, from_prior)
         elif unpack_msg.message.type.startswith("https://didcomm.org/coordinate-mediation/2.0/"):
             return await process_mediator_message(unpack_msg, sender_did, connection_did, from_prior)
-        else:
-            return None
+        elif unpack_msg.message.type.startswith("https://didcomm.org/messagepickup/3.0/"):
+            return await process_pickup_message(unpack_msg, sender_did, connection_did, from_prior)
+        elif unpack_msg.message.type == "https://didcomm.org/routing/2.0/forward":
+            return await process_forward_message(unpack_msg, sender_did, connection_did, from_prior)
+

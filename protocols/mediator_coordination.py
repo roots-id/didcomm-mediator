@@ -1,4 +1,4 @@
-""" Mediator Coordination 2.0 """
+""" Mediator Coordination Protocol """
 from didcomm.message import Message, FromPrior
 import uuid
 from didcomm.pack_encrypted import pack_encrypted, PackEncryptedConfig, PackEncryptedResult
