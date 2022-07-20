@@ -6,7 +6,8 @@ from didcomm.common.resolvers import ResolversConfig
 from didcomm.unpack import UnpackResult
 from didcomm_v2.peer_did import get_secret_resolver
 from didcomm_v2.peer_did import DIDResolverPeerDID
-from db_utils import get_message_status, get_messages
+from didcomm.message import Attachment, AttachmentDataJson
+from db_utils import get_message_status, get_messages, remove_messages
 
 
 async def process_pickup_message(unpack_msg: UnpackResult, remote_did, local_did, from_prior: FromPrior):
@@ -23,7 +24,6 @@ async def process_pickup_message(unpack_msg: UnpackResult, remote_did, local_did
 
 async def process_status_request(unpack_msg: UnpackResult, remote_did, local_did, from_prior: FromPrior):
     recipient_key =  unpack_msg.message.body["recipient_key"] if "recipient_key" in unpack_msg.message.body else None
-    # find message info in DB
     count = get_message_status(remote_did, recipient_key)
     # TODO add optional info 
     response_message = Message(
@@ -57,10 +57,8 @@ async def process_status_request(unpack_msg: UnpackResult, remote_did, local_did
 async def process_delivery_request(unpack_msg: UnpackResult, remote_did, local_did, from_prior: FromPrior):
     recipient_key =  unpack_msg.message.body["recipient_key"] if "recipient_key" in unpack_msg.message.body else None
     limit = unpack_msg.message.body["limit"] 
-    # find messages info in DB
-    attachments = get_messages(remote_did, recipient_key,limit)
-
-    if len(attachments) == 0:
+    messages = get_messages(remote_did, recipient_key,limit)
+    if len(list(messages)) == 0:
         response_message = Message(
         id=str(uuid.uuid4()),
         type="https://didcomm.org/messagepickup/3.0/status",
@@ -72,7 +70,14 @@ async def process_delivery_request(unpack_msg: UnpackResult, remote_did, local_d
         from_prior = from_prior
     )
     else:
-
+        attachments = []
+        for att in messages:
+            print(att)
+            attachments.append(Attachment(
+                id=str(att["_id"]),
+                data=AttachmentDataJson(json=att["attachment"]
+                )
+        ))
         # TODO add optional info 
         response_message = Message(
             id=str(uuid.uuid4()),
@@ -100,14 +105,21 @@ async def process_delivery_request(unpack_msg: UnpackResult, remote_did, local_d
 
 async def process_message_received(unpack_msg: UnpackResult, remote_did, local_did, from_prior: FromPrior):
     message_id_list =  unpack_msg.message.body["message_id_list"]
+    recipient_key =  unpack_msg.message.body["recipient_key"] if "recipient_key" in unpack_msg.message.body else None
     # remove messages info in DB
-    count = 0
+    remove_messages(remote_did, message_id_list)
+    count = get_message_status(remote_did, recipient_key)
 
     response_message = Message(
     id=str(uuid.uuid4()),
     type="https://didcomm.org/messagepickup/3.0/status",
     body={
             "message_count": count,
+            "live_delivery": False,
+            # "longest_waited_seconds": 3600,
+            # "newest_received_time": "2019-05-01 12:00:00Z",
+            # "oldest_received_time": "2019-05-01 12:00:01Z",
+            # "total_bytes": 8096,
             "live_delivery": False
     },
     from_prior = from_prior

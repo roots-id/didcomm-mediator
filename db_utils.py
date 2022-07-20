@@ -1,5 +1,6 @@
 ''' DB Utilities '''
 from pymongo import MongoClient
+from bson.objectid import ObjectId
 import datetime
 
 mongo = MongoClient()
@@ -100,18 +101,18 @@ def update_keys(remote_did, updates):
 
 def get_message_status(remote_did, recipient_key):
     if recipient_key:
-        count = db.messages.find({"recipient_key": recipient_key},{"attachment":1}).count()
+        count = db.messages.count_documents({"recipient_key": recipient_key},{"attachment":1})
     else:
-        recipient_keys = db.conections.find_one({"remote_did":remote_did},{"keylist":1})
-        count = db.messages.find({"recipient_key": {"$in":recipient_keys}},{"attachment":1}).count()
+        recipient_keys = db.connections.find_one({"remote_did":remote_did})["keylist"]
+        count = db.messages.count_documents({"recipient_key": {"$in":recipient_keys}})
     return count
 
 def get_messages(remote_did, recipient_key,limit):
     if recipient_key:
         return db.messages.find({"recipient_key": recipient_key},{"attachment":1}).limit(limit)
     else:
-        recipient_keys = db.conections.find_one({"remote_did":remote_did},{"keylist":1})
-        return db.messages.find({"recipient_key": {"$in":recipient_keys}},{"attachment":1}).limit(limit)
+        recipient_keys = db.connections.find_one({"remote_did":remote_did})["keylist"]
+        return list(db.messages.find({"recipient_key": {"$in":recipient_keys}}).limit(limit))
 
 def add_message(recipient_key, attachment):
     # TODO verify that recipient_key belong to a registered peer
@@ -126,5 +127,5 @@ def add_message(recipient_key, attachment):
 def remove_messages(remote_did, message_id_list):
     #TODO verify that recipient_key belongs to remote_did
     for id in message_id_list:
-        db.messages.find_one({"_id": id, "recipient_key": recipient_key})
+        db.messages.delete_one({"_id": ObjectId(id)})
     return get_message_status(remote_did, None)
