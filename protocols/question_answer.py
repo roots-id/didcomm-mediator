@@ -12,9 +12,7 @@ import datetime
 
 async def process_question(unpack_msg: UnpackResult, remote_did, local_did, from_prior: FromPrior):
     """ Response to a Question message with the first valid answer """
-    print("Question message received: " + unpack_msg.message.body["question_text"])
     first_valid_answer = unpack_msg.message.body["valid_responses"][0]
-    print("Responding with: " + first_valid_answer)
     # Responds if the time has not expired
     if "expires_time" in unpack_msg.message.body and unpack_msg.message.body["expires_time"] < int(datetime.datetime.now().timestamp()):
         

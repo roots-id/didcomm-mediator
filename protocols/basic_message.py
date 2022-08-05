@@ -8,16 +8,18 @@ from importlib_metadata import metadata
 from didcomm_v2.peer_did import get_secret_resolver
 from didcomm_v2.peer_did import DIDResolverPeerDID
 import datetime
-
+import urllib.parse
+import requests
 
 async def process_basic_message(unpack_msg: UnpackResult, remote_did, local_did, from_prior: FromPrior):
     """ Response to Basic message with same message """
-    print("Basic message received: " + unpack_msg.message.body["content"])
+    question = urllib.parse.quote(unpack_msg.message.body["content"])
+    answer = requests.get("http://api.wolframalpha.com/v1/result?i="+question+"&appid=PK2XWK-WRQY9AH8X7").text
     response_message = Message(
         id=str(uuid.uuid4()),
         thid=unpack_msg.message.id if not unpack_msg.message.thid else unpack_msg.message.thid,
         type="https://didcomm.org/basicmessage/2.0/message",
-        body=unpack_msg.message.body,
+        body={"content": answer},
         custom_headers = [{
         "sent_time": int(datetime.datetime.now().timestamp())            
                       }],

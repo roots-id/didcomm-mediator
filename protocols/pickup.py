@@ -57,7 +57,7 @@ async def process_status_request(unpack_msg: UnpackResult, remote_did, local_did
 async def process_delivery_request(unpack_msg: UnpackResult, remote_did, local_did, from_prior: FromPrior):
     recipient_key =  unpack_msg.message.body["recipient_key"] if "recipient_key" in unpack_msg.message.body else None
     limit = unpack_msg.message.body["limit"] 
-    messages = get_messages(remote_did, recipient_key,limit)
+    messages = get_messages(remote_did, recipient_key,int(limit))
     if len(list(messages)) == 0:
         response_message = Message(
         id=str(uuid.uuid4()),
@@ -72,7 +72,6 @@ async def process_delivery_request(unpack_msg: UnpackResult, remote_did, local_d
     else:
         attachments = []
         for att in messages:
-            print(att)
             attachments.append(Attachment(
                 id=str(att["_id"]),
                 data=AttachmentDataJson(json=att["attachment"]

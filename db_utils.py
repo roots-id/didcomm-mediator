@@ -2,8 +2,9 @@
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 import datetime
+import os
 
-mongo = MongoClient()
+mongo = MongoClient(os.environ["DB_URL"])
 db = mongo.mediator
 
 def get_connection(remote_did):
@@ -28,7 +29,7 @@ def update_connection(remote_old_did, remote_new_did):
     )
 
 def get_oob_did():
-    return db.oobs.find_one()
+    return db.oobs.find_one(sort=[('date', -1)])
 
 def store_oob_did(did):
     db.oobs.insert_one(did)

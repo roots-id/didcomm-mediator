@@ -11,11 +11,12 @@ from didcomm_v2.peer_did import DIDResolverPeerDID
 from didcomm_v2.message_routing import message_routing
 from protocols.oob import create_oob
 from db_utils import get_oob_did, store_oob_did
+import os
 
 app = FastAPI()
 SERVER_IP = "0.0.0.0"
 SERVER_PORT = 8000
-PUBLIC_URL = "https://mediator.rootsid.cloud"
+PUBLIC_URL = os.environ["PUBLIC_URL"] if "PUBLIC_URL" in os.environ  else "http://127.0.0.1:8000"
 secrets_resolver = get_secret_resolver()
 app.state.oob_did = None
 app.state.oob_url = None
@@ -23,9 +24,12 @@ app.state.oob_url = None
 @app.on_event("startup")
 async def startup():
     """ Server start up """
+    print("Server Start up")
     oob = get_oob_did()
-    if not oob:
-        app.state.oob_did = await create_peer_did(1, 1, service_endpoint="http://127.0.0.1:8000")
+    print(oob)
+    if not oob or os.environ["ROTATE_OOB"]=="1":
+        print("Generating OOB")
+        app.state.oob_did = await create_peer_did(1, 1, service_endpoint=PUBLIC_URL)
         store_oob_did({
           "did": app.state.oob_did,
           "date": int(datetime.datetime.now().timestamp())*1000,
@@ -78,5 +82,11 @@ async def get_oob_url():
     ''' Return OOB URL '''
     return Response(app.state.oob_url)
 
+@app.get("/")
+def health_check():
+    return
+
 if __name__ == "__main__":
     uvicorn.run("main:app", host=SERVER_IP, port=SERVER_PORT, reload=True)
+
+

@@ -8,7 +8,9 @@ from protocols.question_answer import process_question
 from protocols.mediator_coordination import process_mediator_message
 from protocols.routing import process_forward_message
 from protocols.pickup import process_pickup_message
+from protocols.discover_features import process_discover_queries
 from db_utils import create_connection, get_connection, update_connection
+import os
 
 async def message_routing(unpack_msg:UnpackResult):
     """ Selecting the correct protocol base on message type """
@@ -29,7 +31,7 @@ async def message_routing(unpack_msg:UnpackResult):
         connection = get_connection(sender_old_did)
         if not connection:
             #allways rotate DID if unknown connection
-            connection_did = await create_peer_did(1, 1, service_endpoint="http://127.0.0.1:8000")
+            connection_did = await create_peer_did(1, 1, service_endpoint=os.environ["PUBLIC_URL"])
             from_prior = FromPrior(iss=unpack_msg.metadata.encrypted_to[0].split("#")[0], sub=connection_did)
             create_connection(sender_did, connection_did)
         else:
@@ -49,4 +51,6 @@ async def message_routing(unpack_msg:UnpackResult):
             return await process_pickup_message(unpack_msg, sender_did, connection_did, from_prior)
         elif unpack_msg.message.type == "https://didcomm.org/routing/2.0/forward":
             return await process_forward_message(unpack_msg, sender_did, connection_did, from_prior)
+        elif unpack_msg.message.type == "https://didcomm.org/discover-features/2.0/queries":
+            return await process_discover_queries(unpack_msg, sender_did, connection_did, from_prior)
 

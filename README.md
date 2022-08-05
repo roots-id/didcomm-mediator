@@ -70,6 +70,9 @@ NOTE: all post message from A will have the decorator for `Transports Return Rou
 
 ## Build and docker
 ```
-docker build -f ./docker/Dockerfile . --platform=linux/amd64 -t rodopincha/didcomm-mediator
+docker build -f ./Dockerfile . --platform=linux/amd64 -t rodopincha/didcomm-mediator
+docker push rodopincha/didcomm-mediator 
 docker run -p 8000:8000 rodopincha/didcomm-mediator
 ```
+
+

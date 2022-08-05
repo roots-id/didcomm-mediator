@@ -9,6 +9,7 @@ from didcomm_v2.peer_did import get_secret_resolver
 from didcomm_v2.peer_did import DIDResolverPeerDID
 from didcomm_v2.peer_did import create_peer_did
 from db_utils import get_connection, add_mediation, update_keys
+import os
 
 
 async def process_mediator_message(unpack_msg: UnpackResult, remote_did, local_did, from_prior: FromPrior):
@@ -42,8 +43,8 @@ async def process_mediate_request(unpack_msg: UnpackResult, remote_did, local_di
         )
         return response_packed.packed_msg
 
-    routing_key = await create_peer_did(1, 1, service_endpoint="http://127.0.0.1:8000")
-    endpoint = "http://127.0.0.1:8000"
+    routing_key = await create_peer_did(1, 1, service_endpoint=os.environ["PUBLIC_URL"])
+    endpoint = os.environ["PUBLIC_URL"]
     add_mediation(remote_did, routing_key, endpoint)
     response_message = Message(
         id=str(uuid.uuid4()),
