@@ -1,6 +1,6 @@
 """ Protocol Routing """
 from didcomm.unpack import UnpackResult
-from didcomm.message import Message, FromPrior
+from didcomm.message import FromPrior
 from didcomm_v2.peer_did import create_peer_did
 from protocols.trust_ping import process_trust_ping
 from protocols.basic_message import process_basic_message
@@ -9,10 +9,11 @@ from protocols.mediator_coordination import process_mediator_message
 from protocols.routing import process_forward_message
 from protocols.pickup import process_pickup_message
 from protocols.discover_features import process_discover_queries
+from protocols.issue_credential import process_issue_credential_message
 from db_utils import create_connection, get_connection, update_connection
 import os
 
-async def message_routing(unpack_msg:UnpackResult):
+async def message_dispatch(unpack_msg:UnpackResult):
     """ Selecting the correct protocol base on message type """
     if unpack_msg.message.type == "https://didcomm.org/trust-ping/2.0/ping":
         return await process_trust_ping(unpack_msg)
@@ -53,4 +54,6 @@ async def message_routing(unpack_msg:UnpackResult):
             return await process_forward_message(unpack_msg, sender_did, connection_did, from_prior)
         elif unpack_msg.message.type == "https://didcomm.org/discover-features/2.0/queries":
             return await process_discover_queries(unpack_msg, sender_did, connection_did, from_prior)
+        elif unpack_msg.message.type.startswith("https://didcomm.org/issue-credential/3.0/"):
+            return await process_issue_credential_message(unpack_msg, sender_did, connection_did, from_prior)
 

@@ -12,7 +12,7 @@ from db_utils import add_message
 
 
 async def process_forward_message(unpack_msg: UnpackResult, remote_did, local_did, from_prior: FromPrior):
-    # TODO REMOVE COMMENT AND FIX
+    # TODO REMOVE COMMENT AND FIX IF SENTENCE
     # check if comply with headers
     # if unpack_msg.message.expires_time or "delay_milli" in unpack_msg.message.custom_headers:
     #     #report problem

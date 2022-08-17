@@ -8,7 +8,7 @@ from didcomm.common.resolvers import ResolversConfig
 from didcomm_v2.peer_did import create_peer_did
 from didcomm_v2.peer_did import get_secret_resolver
 from didcomm_v2.peer_did import DIDResolverPeerDID
-from didcomm_v2.message_routing import message_routing
+from didcomm_v2.message_dispatch import message_dispatch
 from protocols.oob import create_oob
 from db_utils import get_oob_did, store_oob_did
 import os
@@ -61,7 +61,7 @@ async def receive_message(request: Request):
         raise HTTPException(status_code=400, detail='Malformed Message')
     else:
         print(unpack_msg.message.type)
-        return await message_routing(unpack_msg)
+        return await message_dispatch(unpack_msg)
 
             # if {"return_route": "all"} in unpack_msg.message.custom_headers 
             # or {"return_route": "thread"} in unpack_msg.message.custom_headers:
