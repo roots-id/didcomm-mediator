@@ -27,6 +27,13 @@ source ./venv/bin/activate
 pip install requirements.txt
 ```
 
+### Envirnomental varables
+```
+export DB_URL=mongodb://localhost:27017                                                  
+export PUBLIC_URL=http://127.0.0.1:8000
+export ROTATE_OOB=0  
+```
+
 ### Run
 `uvicorn main:app --reload`
 
@@ -73,6 +80,26 @@ NOTE: all post message from A will have the decorator for `Transports Return Rou
 docker build -f ./Dockerfile . --platform=linux/amd64 -t rodopincha/didcomm-mediator
 docker push rodopincha/didcomm-mediator 
 docker run -p 8000:8000 rodopincha/didcomm-mediator
+```
+
+## Examples in Jupyter Notebook
+
+
+
+## PRISM ISSUER
+In order to issue Prism Credential you need Java 11 and download Prism SDK (need a Prism SDK password from IOG). We use JPype as a wrapper to access Java classes from Python. 
+
+1- Export your Prism SDK Password: `export PRISM_SDK_PASSWORD="ghp_..."`
+
+2- Download anx extract the JVM SDK
+```
+curl "https://maven.pkg.github.com/input-output-hk/atala-prism-sdk/io/iohk/atala/prism-cli/v1.4.1/prism-cli-v1.4.1.zip" -H "Authorization: Bearer ${PRISM_SDK_PASSWORD}" -L -O
+unzip prism-cli-v1.4.1.zip
+```
+3- Export JAVA_HOME and ATALA_PRISM_JARS as follows:
+```
+export JAVA_HOME=<java_home_directory>
+export ATALA_PRISM_JARS="<working_dir>/prism-cli-v1.4.1/lib"
 ```
 
 

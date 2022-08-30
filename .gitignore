@@ -13,5 +13,6 @@ Pipfile
 Pipfile.lock
 .DS_Store
 secrets.json
-*.ipynb
 oob_qrcode.png
+prism-cli-v*/
+*-workspace

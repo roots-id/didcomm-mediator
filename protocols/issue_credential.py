@@ -8,7 +8,8 @@ from didcomm_v2.peer_did import get_secret_resolver
 from didcomm_v2.peer_did import DIDResolverPeerDID
 from issuer.credential_issuer import issue_credential
 
-# TODO WE HAVE ONLY IMPLEMENTED  RREQUEST-CREDENTIAL AND ISSUE-CREDENTIAL
+# WE HAVE ONLY IMPLEMENTED  RREQUEST-CREDENTIAL, ISSUE-CREDENTIAL, AND ACK
+# TODO OFFER-CREDENTIAL AND PROPOSE-CREDENTIAL
 async def process_issue_credential_message(unpack_msg: UnpackResult, remote_did, local_did, from_prior: FromPrior):
     """ Process Mediator Coordinator messages """
     if unpack_msg.message.type == "https://didcomm.org/issue-credential/3.0/request-credential":

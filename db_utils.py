@@ -32,15 +32,30 @@ def get_oob_did():
     return db.oobs.find_one(sort=[('date', -1)])
 
 def store_oob_did(did):
-    db.oobs.insert_one(did)
+    db.issuers.insert_one(did)
 
-def add_mediation(remote_did, routing_key, endpoint):
+def get_issuer_did():
+    return db.issuers.find_one(sort=[('date', -1)])["did"]
+
+def store_issuer_did(did):
+    db.issuers.insert_one(did)
+
+def get_prism_did(did):
+    return db.prism.find_one({"did": did})
+
+def store_prism_did(did,seed):
+    db.prism.insert_one({
+        "did": did,
+        "seed": seed
+    })
+
+def add_mediation(remote_did, routing_did, endpoint):
     ''' Add mediation info to connection '''
     db.connections.update_one(
         {"remote_did": remote_did}, {
             "$set": {
                         "isMediation": True, 
-                        "routing_key": routing_key,
+                        "routing_did": routing_did,
                         "endpoint": endpoint
                     }
         }
@@ -53,41 +68,41 @@ def update_keys(remote_did, updates):
     updated = []
     for update in updates:
         if update["action"] == "add":
-            if update["recipient_key"] in current_keys:
+            if update["recipient_did"] in current_keys:
                 updated.append(
                     {
-                        "recipient_key": update["recipient_key"],
+                        "recipient_did": update["recipient_did"],
                         "action": "add",
                         "result": "no_change"
                     })
             else:
-                current_keys.append(update["recipient_key"])
+                current_keys.append(update["recipient_did"])
                 updated.append(
                     {
-                        "recipient_key": update["recipient_key"],
+                        "recipient_did": update["recipient_did"],
                         "action": "add",
                         "result": "success"
                     })
         elif update["action"] == "remove":
-            if update["recipient_key"] in current_keys:
-                current_keys.remove(update["recipient_key"])
+            if update["recipient_did"] in current_keys:
+                current_keys.remove(update["recipient_did"])
                 updated.append(
                     {
-                        "recipient_key": update["recipient_key"],
+                        "recipient_did": update["recipient_did"],
                         "action": "remove",
                         "result": "success"
                     })
             else:
                 updated.append(
                     {
-                        "recipient_key": update["recipient_key"],
+                        "recipient_did": update["recipient_did"],
                         "action": "remove",
                         "result": "no_change"
                     })
         else:
             updated.append(
                     {
-                        "recipient_key": update["recipient_key"],
+                        "recipient_did": update["recipient_did"],
                         "action": update["action"],
                         "result": "client_error"
                     })

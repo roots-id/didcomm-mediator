@@ -10,7 +10,8 @@ from didcomm_v2.peer_did import get_secret_resolver
 from didcomm_v2.peer_did import DIDResolverPeerDID
 from didcomm_v2.message_dispatch import message_dispatch
 from protocols.oob import create_oob
-from db_utils import get_oob_did, store_oob_did
+from db_utils import get_oob_did, store_oob_did, get_issuer_did, store_issuer_did
+from blockchains.prism import create_prism_did
 import os
 
 app = FastAPI()
@@ -42,6 +43,15 @@ async def startup():
     app.state.oob_url = create_oob(app.state.oob_did, PUBLIC_URL)
     print(app.state.oob_url)
 
+    # CREATE PRISM DID
+    prism_did = get_issuer_did()
+    print("ISSUER PRISM DID: ", prism_did)
+    if not prism_did:
+        prism_did = await create_prism_did()
+        store_issuer_did({
+          "did": prism_did,
+          "date": int(datetime.datetime.now().timestamp())*1000,
+        })
 
 @app.post("/", status_code=202)
 async def receive_message(request: Request):

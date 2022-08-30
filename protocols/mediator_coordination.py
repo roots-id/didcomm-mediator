@@ -43,15 +43,14 @@ async def process_mediate_request(unpack_msg: UnpackResult, remote_did, local_di
         )
         return response_packed.packed_msg
 
-    routing_key = await create_peer_did(1, 1, service_endpoint=os.environ["PUBLIC_URL"])
+    routing_did = await create_peer_did(1, 1, service_endpoint=os.environ["PUBLIC_URL"])
     endpoint = os.environ["PUBLIC_URL"]
-    add_mediation(remote_did, routing_key, endpoint)
+    add_mediation(remote_did, routing_did, endpoint)
     response_message = Message(
         id=str(uuid.uuid4()),
         type="https://didcomm.org/coordinate-mediation/2.0/mediate-grant",
         body={
-            "endpoint": endpoint,
-            "routing_keys": [routing_key]
+            "routing_did": routing_did
         },
         from_prior = from_prior
     )
@@ -100,7 +99,7 @@ async def process_keylist_query(unpack_msg: UnpackResult, remote_did, local_did,
         id=str(uuid.uuid4()),
         type="https://didcomm.org/coordinate-mediation/2.0/keylist",
         body={
-            "keys": [{"recipient_key": k} for k in keylist]
+            "keys": [{"recipient_did": k} for k in keylist]
         },
         from_prior = from_prior
     )
