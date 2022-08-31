@@ -7,7 +7,6 @@ from didcomm.unpack import UnpackResult
 from didcomm_v2.peer_did import get_secret_resolver
 from didcomm_v2.peer_did import DIDResolverPeerDID
 import re
-print("RM HERE SUPPORTED MESSAGES")
 supported_protocols = [
     "https://didcomm.org/basicmessage/2.0",
     "https://didcomm.org/coordinate-mediation/2.0",

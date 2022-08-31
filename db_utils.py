@@ -35,7 +35,9 @@ def store_oob_did(did):
     db.issuers.insert_one(did)
 
 def get_issuer_did():
-    return db.issuers.find_one(sort=[('date', -1)])["did"]
+    issuer_did = db.issuers.find_one(sort=[('date', -1)])
+    print("RM HERE:",issuer_did)
+    return issuer_did["did"] if issuer_did is not None else None
 
 def store_issuer_did(did):
     db.issuers.insert_one(did)

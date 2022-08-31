@@ -1,18 +1,26 @@
 ## DIDComm Mediator v2
 
-As a general principle, the Mediator implements latest specifications and protocols from [DIF](https://identity.foundation) and [Aries Interoperability Profiles](https://github.com/hyperledger/aries-rfcs/blob/main/concepts/0302-aries-interop-profile/README.md), in particular:
-* [DIF DIDComm Messaging V2](https://identity.foundation/didcomm-messaging/spec/)
-* [DIDComm v2 Out-of-Band Protocol 2.0](https://identity.foundation/didcomm-messaging/spec/#out-of-band-messages)
-* ~~[Aries RFC 0160: Connection Protocol](https://github.com/hyperledger/aries-rfcs/blob/main/features/0160-connection-protocol/README.md)~~  replaced by Aries RFC 0023
-* ~~[Aries RFC 0023: DID Exchange Protocol 1.0](https://github.com/hyperledger/aries-rfcs/tree/b3a3942ef052039e73cd23d847f42947f8287da2/features/0023-did-exchange)~~ not needed in DIDComm v2
-* [Aries RFC 0211: Mediator Coordination Protocol](https://github.com/hyperledger/aries-rfcs/tree/b3a3942ef052039e73cd23d847f42947f8287da2/features/0211-route-coordination) --> Publishing v2
-* [DIDComm v2 Return-Route Extension](https://github.com/decentralized-identity/didcomm-messaging/blob/main/extensions/return_route/main.md)
-* [Aries RFC 0212: Pickup Protocol 2.0](https://github.com/hyperledger/aries-rfcs/blob/cab12f80217ab3aab6243e69051c3442a62a0b45/features/0685-pickup-v2/README.md) --> Publishing v3
-* [Peer DID Method Specification](https://identity.foundation/peer-did-method-spec/)
 
-The initial implementation uses HTTPS transport with [Transport Return Route](https://github.com/hyperledger/aries-rfcs/blob/main/features/0092-transport-return-route/README.md), meaning that the mobile user sends messages to the mediator as HTTPS POST requests, and receives a message back from the mediator in the HTTPS response body.
-Additionally, the [Pickup Protocol](https://github.com/hyperledger/aries-rfcs/blob/cab12f80217ab3aab6243e69051c3442a62a0b45/features/0685-pickup-v2/README.md) is implemented so mobile users can retrieve pending messages from the mediator asynchronously.
-Future releases will implement a websocket transport with [Live Mode](https://github.com/hyperledger/aries-rfcs/blob/cab12f80217ab3aab6243e69051c3442a62a0b45/features/0685-pickup-v2/README.md#live-mode) capability that adds a better realtime communication when both parties are online.
+The Mediator implements the following protocols:
+
+* [DIF DIDComm Messaging V2](https://identity.foundation/didcomm-messaging/spec/)
+* [DIDComm v2 Out-of-Band messages](https://identity.foundation/didcomm-messaging/spec/#out-of-band-messages)
+* [DIDComm v2 Routing Protocol 2.0](https://identity.foundation/didcomm-messaging/spec/#routing-protocol-20)
+* [DIDComm v2 Return-Route Extension](https://github.com/decentralized-identity/didcomm-messaging/blob/main/extensions/return_route/main.md)
+* [Mediator Coordination Protocol 2.0](https://didcomm.org/mediator-coordination/2.0/)
+* [Pickup Protocol 3.0](https://didcomm.org/pickup/3.0/)
+* [Peer DID Method Specification](https://identity.foundation/peer-did-method-spec/)
+* [HTTPS Transport](https://didcomm.org/pickup/3.0/)
+
+As additional features, this mediator implements:
+* Trust Ping
+* Discover Features
+* Basic Message
+* Issue Credential
+
+You can find a list of pending features in [issues](issues)
+
+
 
 ### Significant libraries
 DIDComm and Peer DID is provided by the following libraries:

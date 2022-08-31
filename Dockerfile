@@ -1,4 +1,5 @@
-FROM python:3.9
+FROM openjdk:slim
+COPY --from=python:3.9 / / 
 
 WORKDIR /code
 

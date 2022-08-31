@@ -9,6 +9,7 @@ services:
       - DB_URL=mongodb://db
       - PUBLIC_URL=https://mediator.rootsid.cloud
       - ROTATE_OOB=0
+      - ATALA_PRISM_JARS=/code/prism-cli-v1.4.1/lib
     depends_on:
       - db
   db:

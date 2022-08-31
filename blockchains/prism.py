@@ -1,46 +1,49 @@
+from distutils.log import error
 import sys
 import os
 import time
 import jpype
 import jpype.imports
 from db_utils import get_prism_did, store_prism_did
-import json
 
 try:
     sdk_gradle_home = os.environ["ATALA_PRISM_JARS"]
 except KeyError:
     print("ERROR: `ATALA_PRISM_JARS` variable is not set.")
     print("Please, set it to the directory with Atala PRISM SDK dependencies JARs.")
-    #sys.exit(1)
+    sys.exit(1)
 
 try:
     jpype.imports.registerDomain('sdk', alias='io')
 except ImportError as err:
     print(err.msg)
-    #sys.exit(1)
-jpype.startJVM(
-    classpath=[
-        os.path.join(sdk_gradle_home, f) for f in os.listdir(sdk_gradle_home)
-            if f.endswith('.jar')
-    ]
-)
+    sys.exit(1)
+try:
+    jpype.startJVM(
+        classpath=[
+            os.path.join(sdk_gradle_home, f) for f in os.listdir(sdk_gradle_home)
+                if f.endswith('.jar')
+        ]
+    )
 
-from sdk.iohk.atala.prism.protos import *
-from sdk.iohk.atala.prism.api.node import *
-from sdk.iohk.atala.prism.api.models import *
-from sdk.iohk.atala.prism.api import *
-from sdk.iohk.atala.prism.crypto.derivation import *
-from sdk.iohk.atala.prism.crypto.keys import *
-from sdk.iohk.atala.prism.identity import *
-from kotlinx.serialization.json import *
+    from sdk.iohk.atala.prism.protos import *
+    from sdk.iohk.atala.prism.api.node import *
+    from sdk.iohk.atala.prism.api.models import *
+    from sdk.iohk.atala.prism.api import *
+    from sdk.iohk.atala.prism.crypto.derivation import *
+    from sdk.iohk.atala.prism.crypto.keys import *
+    from sdk.iohk.atala.prism.identity import *
+    from kotlinx.serialization.json import *
 
-KeyGenerator = KeyGenerator.INSTANCE
-KeyDerivation = KeyDerivation.INSTANCE
-MasterKeyUsage = MasterKeyUsage.INSTANCE
-IssuingKeyUsage = IssuingKeyUsage.INSTANCE
-RevocationKeyUsage = RevocationKeyUsage.INSTANCE
-AuthenticationKeyUsage = AuthenticationKeyUsage.INSTANCE
-AtalaOperationStatus = AtalaOperationStatus.INSTANCE
+    KeyGenerator = KeyGenerator.INSTANCE
+    KeyDerivation = KeyDerivation.INSTANCE
+    MasterKeyUsage = MasterKeyUsage.INSTANCE
+    IssuingKeyUsage = IssuingKeyUsage.INSTANCE
+    RevocationKeyUsage = RevocationKeyUsage.INSTANCE
+    AuthenticationKeyUsage = AuthenticationKeyUsage.INSTANCE
+    AtalaOperationStatus = AtalaOperationStatus.INSTANCE
+except Exception as e:
+    print("ERROR ",e)
 
 def wait_until_confirmed(node_api: NodePublicApi, operation_id: AtalaOperationId):
     """Waits until operation is confirmed by Cardano network
