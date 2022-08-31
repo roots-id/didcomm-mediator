@@ -16,7 +16,8 @@ async def issue_credential(unpack_msg: UnpackResult, remote_did, local_did, from
     attachment = unpack_msg.message.attachments[0]
     # TODO throw error if format is not supported
     # TODO validate options
-    if attachment.format == "aries/ld-proof-vc-detail@v1.0":
+    #if attachment.format == "aries/ld-proof-vc-detail@v1.0":
+    if True:
         vc_detail = attachment.data.json
         credential = vc_detail["credential"]
         holder_did = credential["credentialSubject"]["id"]
