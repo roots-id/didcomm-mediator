@@ -107,3 +107,5 @@ unzip prism-cli-v1.4.1.zip
 export JAVA_HOME=<java_home_directory>
 export ATALA_PRISM_JARS="<working_dir>/prism-cli-v1.4.1/lib"
 ```
+4- Export Prism Issuer switch
+export PRISM_ISSUER=1

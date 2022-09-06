@@ -43,15 +43,15 @@ async def startup():
     app.state.oob_url = create_oob(app.state.oob_did, PUBLIC_URL)
     print(app.state.oob_url)
 
-    # CREATE PRISM DID
-    prism_did = get_issuer_did()
-    print("ISSUER PRISM DID: ", prism_did)
-    if not prism_did:
-        prism_did = await create_prism_did()
-        store_issuer_did({
-          "did": prism_did,
-          "date": int(datetime.datetime.now().timestamp())*1000,
-        })
+    if "PRISM_ISSUER" in os.environ and os.environ["PRISM_ISSUER"]==1:
+        prism_did = get_issuer_did()
+        print("ISSUER PRISM DID: ", prism_did)
+        if not prism_did:
+            prism_did = await create_prism_did()
+            store_issuer_did({
+            "did": prism_did,
+            "date": int(datetime.datetime.now().timestamp())*1000,
+            })
 
 @app.post("/", status_code=202)
 async def receive_message(request: Request):
