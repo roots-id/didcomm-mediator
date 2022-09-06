@@ -16,3 +16,4 @@ secrets.json
 oob_qrcode.png
 prism-cli-v*/
 *-workspace
+docker-compose.yml

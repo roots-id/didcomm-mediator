@@ -3,8 +3,17 @@ from pymongo import MongoClient
 from bson.objectid import ObjectId
 import datetime
 import os
+import urllib.parse
 
-mongo = MongoClient(os.environ["DB_URL"])
+
+mongo = MongoClient(
+    os.environ["DB_URL"],
+    username=urllib.parse.quote_plus(os.environ["MONGODB_USER"]) if "MONGODB_USER" in os.environ else None,
+    password=urllib.parse.quote_plus(os.environ["MONGODB_PASSWORD"]) if "MONGODB_PASSWORD" in os.environ else None,
+    authSource="admin"
+)
+
+
 db = mongo.mediator
 
 def get_connection(remote_did):
@@ -32,11 +41,10 @@ def get_oob_did():
     return db.oobs.find_one(sort=[('date', -1)])
 
 def store_oob_did(did):
-    db.issuers.insert_one(did)
+    db.oobs.insert_one(did)
 
 def get_issuer_did():
     issuer_did = db.issuers.find_one(sort=[('date', -1)])
-    print("RM HERE:",issuer_did)
     return issuer_did["did"] if issuer_did is not None else None
 
 def store_issuer_did(did):

@@ -13,11 +13,18 @@ from peerdid.did_doc import DIDDocPeerDID
 from peerdid.types import VerificationMaterialAuthentication, VerificationMethodTypeAuthentication, VerificationMaterialAgreement, VerificationMethodTypeAgreement, VerificationMaterialFormatPeerDID
 from pymongo import MongoClient
 import os
+import urllib.parse
 
 class SecretsResolverMongo(SecretsResolverEditable):
     """ Secret Resolver on MongoDB"""
     def __init__(self, mongo_db_uri=os.environ["DB_URL"]):
-        self.mongo = MongoClient(mongo_db_uri)
+        #self.mongo = MongoClient(mongo_db_uri)
+        self.mongo = MongoClient(
+            mongo_db_uri,
+            username=urllib.parse.quote_plus(os.environ["MONGODB_USER"]) if "MONGODB_USER" in os.environ else None,
+            password=urllib.parse.quote_plus(os.environ["MONGODB_PASSWORD"]) if "MONGODB_PASSWORD" in os.environ else None,
+            authSource='admin'
+        )
         self.db = self.mongo.mediator
         self.secrets = self.db.secrets
 
