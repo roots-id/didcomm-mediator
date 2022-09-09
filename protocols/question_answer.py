@@ -27,8 +27,15 @@ async def submit_question(unpack_msg: UnpackResult, remote_did, local_did, from_
                     }],
         from_prior = from_prior,
         body={
-            "response": "Are you in fron of the computer?",
-            "response_signature": response_signature
+            "question_text": "Alice, are you on the phone with Bob from Faber Bank right now?",
+            "question_detail": "This is optional fine-print giving context to the question and its various answers.",
+            "nonce": str(uuid.uuid4()),
+            "signature_required": True,
+            "valid_responses" : [
+                {"text": "Yes, it's me"},
+                {"text": "No, that's not me!"}
+            ],
+            "expires_time": int(datetime.datetime.now().timestamp() + 2 * 60) 
         }
     )
     response_packed = await pack_encrypted(
