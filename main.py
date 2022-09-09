@@ -2,7 +2,7 @@
 import datetime
 import uvicorn
 from fastapi import Request, FastAPI, HTTPException
-from fastapi.responses import FileResponse, Response
+from fastapi.responses import FileResponse, Response, RedirectResponse
 from didcomm.unpack import unpack
 from didcomm.common.resolvers import ResolversConfig
 from didcomm_v2.peer_did import create_peer_did
@@ -10,9 +10,11 @@ from didcomm_v2.peer_did import get_secret_resolver
 from didcomm_v2.peer_did import DIDResolverPeerDID
 from didcomm_v2.message_dispatch import message_dispatch
 from protocols.oob import create_oob
-from db_utils import get_oob_did, store_oob_did, get_issuer_did, store_issuer_did
-from blockchains.prism import create_prism_did
+from db_utils import get_oob_did, store_oob_did, get_issuer_did, store_issuer_did, get_short_url
 import os
+
+if "PRISM_ISSUER" in os.environ and os.environ["PRISM_ISSUER"]==1:
+    from blockchains.prism import create_prism_did
 
 app = FastAPI()
 SERVER_IP = "0.0.0.0"
@@ -86,11 +88,26 @@ async def get_oob_qrcode():
     ''' Return OOB QR Code image '''
     return FileResponse("oob_qrcode.png")
 
+@app.get("/oob_small_qrcode")
+async def get_oob_short_qrcode():
+    ''' Return Short OOB QR Code image '''
+    return FileResponse("oob_small_qrcode.png")
 
 @app.get("/oob_url")
 async def get_oob_url():
     ''' Return OOB URL '''
     return Response(app.state.oob_url)
+
+@app.get("/qr")
+async def redirect_shortened_url():
+    ''' Redirect short URLs '''
+    oobid = "f914ad6c0f3e428999cf9dbbd540f0f9"
+    short_url = get_short_url(oobid)
+    if short_url["expires_time"] > int(datetime.datetime.now().timestamp())*1000:
+        return RedirectResponse(Response(short_url["long_url"]), 301)
+    else:
+        # return 404
+        return Response(app.state.oob_url)
 
 @app.get("/")
 def health_check():

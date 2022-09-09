@@ -4,14 +4,18 @@ from didcomm.message import FromPrior
 from didcomm_v2.peer_did import create_peer_did
 from protocols.trust_ping import process_trust_ping
 from protocols.basic_message import process_basic_message
-from protocols.question_answer import process_question
+from protocols.question_answer import process_answer
 from protocols.mediator_coordination import process_mediator_message
 from protocols.routing import process_forward_message
 from protocols.pickup import process_pickup_message
 from protocols.discover_features import process_discover_queries
-from protocols.issue_credential import process_issue_credential_message
+from protocols.action_menu import process_action_menu_message
+from protocols.shorten_url import process_shorten_url_message
 from db_utils import create_connection, get_connection, update_connection
 import os
+if "PRISM_ISSUER" in os.environ and os.environ["PRISM_ISSUER"]==1:
+    from protocols.issue_credential import process_issue_credential_message
+
 
 async def message_dispatch(unpack_msg:UnpackResult):
     """ Selecting the correct protocol base on message type """
@@ -42,8 +46,8 @@ async def message_dispatch(unpack_msg:UnpackResult):
                 update_connection(sender_old_did, sender_did)
 
         # Routing base on message type
-        if unpack_msg.message.type == "https://didcomm.org/questionanswer/2.0/question":
-            return process_question(unpack_msg, sender_did, connection_did, from_prior)
+        if unpack_msg.message.type == "https://didcomm.org/questionanswer/2.0/answer":
+            return process_answer(unpack_msg, sender_did, connection_did, from_prior)
         elif unpack_msg.message.type == "https://didcomm.org/basicmessage/2.0/message":
             return await process_basic_message(unpack_msg, sender_did, connection_did, from_prior)
         elif unpack_msg.message.type.startswith("https://didcomm.org/coordinate-mediation/2.0/"):
@@ -56,4 +60,8 @@ async def message_dispatch(unpack_msg:UnpackResult):
             return await process_discover_queries(unpack_msg, sender_did, connection_did, from_prior)
         elif unpack_msg.message.type.startswith("https://didcomm.org/issue-credential/3.0/"):
             return await process_issue_credential_message(unpack_msg, sender_did, connection_did, from_prior)
+        elif unpack_msg.message.type.startswith("https://didcomm.org/action-menu/2.0/"):
+            return await process_action_menu_message(unpack_msg, sender_did, connection_did, from_prior)
+        elif unpack_msg.message.type.startswith("https://didcomm.org/shorten-url/1.0/"):
+            return await process_shorten_url_message(unpack_msg, sender_did, connection_did, from_prior)
 

@@ -155,3 +155,21 @@ def remove_messages(remote_did, message_id_list):
     for id in message_id_list:
         db.messages.delete_one({"_id": ObjectId(id)})
     return get_message_status(remote_did, None)
+
+def get_short_url(oobid):
+    short_url = db.shortUrls.find_one({"oobid": oobid},sort=[('date', -1)])
+    return short_url
+
+def store_short_url(short_url):
+    db.shortUrls.insert_one(short_url)
+
+def expire_short_url(oobid):
+        # TODO order by date
+        db.shortUrls.update_one(
+            {"oobid": oobid}, {
+                "$set": {
+                            "expires_time": int(0)
+                        }
+            }
+        )
+    

@@ -1,6 +1,5 @@
 ## RootsID DIDComm v2 Mediator
 
-
 This Mediator implements the following protocols:
 
 * [DIF DIDComm Messaging V2](https://identity.foundation/didcomm-messaging/spec/)
@@ -13,14 +12,17 @@ This Mediator implements the following protocols:
 * [HTTPS Transport](https://identity.foundation/didcomm-messaging/spec/#https)
 
 ### Extra features
-As additional features, this mediator also implements:
+This mediator also implements the following features that can be used as a playground to test other protocols:
 * [Trust Ping Protocol 2.0](https://identity.foundation/didcomm-messaging/spec/#trust-ping-protocol-20)
 * [Discover Features Protocol 2.0](https://identity.foundation/didcomm-messaging/spec/#discover-features-protocol-20)
 * [Basic Message Protocol 2.0](https://didcomm.org/basicmessage/2.0/)
 * [WACI PEx Issue Credential Protocol 3.0]()
+* [Shorten URL Protocol 1.0]()
+* [Action Menu Protocol 2.0](https://didcomm.org/action-menu/2.0/)
+* [Question Answer Protocol 2.0]()
 
 ### ToDo's
-Pending features and known issues can be found at the [issues]([issues](https://github.com/roots-id/didcomm-mediator/issues)) section in this repository.
+Pending features and known issues and missings can be found at the [issues]([issues](https://github.com/roots-id/didcomm-mediator/issues)) section in this repository.
 Note that this mediator is currently a **Proof of Concept**. Several `TODO`'s still pending in the code.
 
 ### Significant libraries
@@ -33,6 +35,11 @@ We have deployed an instance of the mediator in the cloud for testing, demoing, 
 Your identity wallet can scan the following Out of Band invitation QR code and request mediation:
 
 ![QR Code](https://mediator.rootsid.cloud/oob_qrcode)
+
+Or scan the small QR code (OOB D) that redirect to the big one:
+
+![Small QR Code](https://mediator.rootsid.cloud/oob_small_qrcode)
+
 
 ### Installation
 ```
@@ -108,4 +115,6 @@ export JAVA_HOME=<java_home_directory>
 export ATALA_PRISM_JARS="<working_dir>/prism-cli-v1.4.1/lib"
 ```
 4- Export Prism Issuer switch
+```
 export PRISM_ISSUER=1
+```
