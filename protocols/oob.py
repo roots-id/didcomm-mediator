@@ -15,8 +15,8 @@ def create_oob(did, url):
         "id": str(uuid.uuid4()),
         "from": did,
         "body": {
-            "goal_code": "register",
-            "goal": "Register in mediator",
+            "goal_code": "request-mediate",
+            "goal": "Request Mediate",
             "accept": [
                 "didcomm/v2",
                 "didcomm/aip2;env=rfc587"

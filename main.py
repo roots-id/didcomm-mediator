@@ -99,18 +99,30 @@ async def get_oob_url():
     return Response(app.state.oob_url)
 
 @app.get("/qr")
-async def redirect_shortened_url():
+async def redirect_shortened_url(_oobid):
     ''' Redirect short URLs '''
-    oobid = "f914ad6c0f3e428999cf9dbbd540f0f9"
-    short_url = get_short_url(oobid)
-    if short_url["expires_time"] > int(datetime.datetime.now().timestamp())*1000:
-        return RedirectResponse(Response(short_url["long_url"]), 301)
+    print(_oobid)
+    short_url_reg = get_short_url(_oobid)
+    if short_url_reg and short_url_reg["expires_time"] > int(datetime.datetime.now().timestamp()*1000):
+        print(short_url_reg["long_url"])
+        return RedirectResponse(short_url_reg["long_url"], 301)
     else:
-        # return 404
-        return Response(app.state.oob_url)
+        raise HTTPException(status_code=404)
+
+@app.get("/qr/{path}")
+async def redirect_shortened_url(_oobid):
+    ''' Redirect short URLs '''
+    print(_oobid)
+    short_url_reg = get_short_url(_oobid)
+    if short_url_reg and short_url_reg["expires_time"] > int(datetime.datetime.now().timestamp()*1000):
+        print(short_url_reg["long_url"])
+        return RedirectResponse(short_url_reg["long_url"], 301)
+    else:
+        raise HTTPException(status_code=404)
+
 
 @app.get("/")
-def health_check():
+def health_check(_oob):
     return
 
 if __name__ == "__main__":
