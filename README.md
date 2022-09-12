@@ -59,9 +59,10 @@ The following environmental variables are needed. Change the values as your need
 ```
 export DB_URL=mongodb://localhost:27017
 export PUBLIC_URL=http://127.0.0.1:8000
-export ROTATE_OOB=0  
-export MONGODB_USER=xxxxx
+export ROTATE_OOB=0  // rotate OOB at startup if set
+export MONGODB_USER=XXXXXX
 export MONGODB_PASSWORD=yyyyy
+export WOLFRAM_ALPHA_API_ID=ZZZZZZ // only for basicmessage demo (https://www.wolframalpha.com)
 ```
 
 ### Runing the agent

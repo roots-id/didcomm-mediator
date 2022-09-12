@@ -4,14 +4,13 @@ import uuid
 from didcomm.pack_encrypted import pack_encrypted, PackEncryptedConfig, PackEncryptedResult
 from didcomm.common.resolvers import ResolversConfig
 from didcomm.unpack import UnpackResult
-from importlib_metadata import metadata
 from didcomm_v2.peer_did import get_secret_resolver
 from didcomm_v2.peer_did import DIDResolverPeerDID
-from didcomm_v2.peer_did import create_peer_did
 from protocols.question_answer import submit_question
 import datetime
 import os
-
+import urllib.parse
+import requests
 
 async def process_action_menu_message(unpack_msg: UnpackResult, remote_did, local_did, from_prior: FromPrior):
     if unpack_msg.message.type == "https://didcomm.org/action-menu/2.0/menu-request":
@@ -124,8 +123,11 @@ async def process_perform(unpack_msg: UnpackResult, remote_did, local_did, from_
         )
         return response_packed.packed_msg
     elif perform_action == "ask-me-example":
-        question = urllib.parse.quote(unpack_msg.message.body["form"]["question"])
-        answer = requests.get("http://api.wolframalpha.com/v1/result?i="+question+"&appid=PK2XWK-WRQY9AH8X7").text
+        question = urllib.parse.quote(unpack_msg.message.body["params"]["question"])
+        if "WOLFRAM_ALPHA_API_ID" in os.environ:
+            answer = requests.get("http://api.wolframalpha.com/v1/result?i="+question+"&appid="+os.environ["WOLFRAM_ALPHA_API_ID"]).text
+        else: 
+            answer = "No Wolfram Apha API ID in server"
         response_message = Message(
             id=str(uuid.uuid4()),
             thid=unpack_msg.message.id if not unpack_msg.message.thid else unpack_msg.message.thid,
