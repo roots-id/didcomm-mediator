@@ -13,7 +13,10 @@ supported_protocols = [
     "https://didcomm.org/messagepickup/3.0",
     "https://didcomm.org/out-of-band/2.0",
     "https://didcomm.org/trust-ping/2.0",
-    "https://didcomm.org/discover-features/2.0"
+    "https://didcomm.org/discover-features/2.0",
+    "https://didcomm.org/action-menu/2.0",
+    "https://didcomm.org/shorten-url/1.0/",
+    "https://didcomm.org/issue-credential/3.0"
 ]
 
 async def process_discover_queries(unpack_msg: UnpackResult, remote_did, local_did, from_prior: FromPrior):
