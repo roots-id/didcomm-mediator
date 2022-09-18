@@ -45,10 +45,24 @@ def store_oob_did(did):
 
 def get_issuer_did():
     issuer_did = db.issuers.find_one(sort=[('date', -1)])
-    return issuer_did["did"] if issuer_did is not None else None
+    return issuer_did if issuer_did is not None else None
 
 def store_issuer_did(did):
     db.issuers.insert_one(did)
+
+
+def store_vc(vc):
+    db.vcs.insert_one(vc)
+
+def get_vc(vc_id):
+    return db.vcs.find_one({"id": vc_id})
+
+def get_prism_holder_did():
+    holder_did = db.prism_holder.find_one(sort=[('date', -1)])
+    return holder_did if holder_did is not None else None
+
+def store_prism_holder_did(did):
+    db.prism_holder.insert_one(did)
 
 def get_prism_did(did):
     return db.prism.find_one({"did": did})

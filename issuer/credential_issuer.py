@@ -2,13 +2,11 @@
 from didcomm.message import Message, FromPrior
 import uuid
 from didcomm.unpack import UnpackResult
-from db_utils import get_issuer_did
+from db_utils import get_issuer_did, store_vc , get_vc
 import datetime
 from didcomm.message import Attachment, AttachmentDataJson
 from blockchains.prism import issue_prism_credential
 import json
-
-
 
 async def issue_credential(unpack_msg: UnpackResult, remote_did, local_did, from_prior: FromPrior):
     # 1-Validate credential request
@@ -17,15 +15,22 @@ async def issue_credential(unpack_msg: UnpackResult, remote_did, local_did, from
     # TODO throw error if format is not supported
     # TODO validate options
     #if attachment.format == "aries/ld-proof-vc-detail@v1.0":
-    if True:
+    id_to_search = attachment.data.json['credential']['id']
+    credential = get_vc(id_to_search)
+    print('local credential retrieved')
+    print(credential)
+    if credential:
+        credential.pop('_id')
+    if credential == None:
         vc_detail = attachment.data.json
         credential = vc_detail["credential"]
         holder_did = credential["credentialSubject"]["id"]
         # TODO validate if did:prism
-        issuer_did = get_issuer_did()
+        issuer_did = get_issuer_did()['did']
+        #MUST BE PRISM
         credential["issuer"] = issuer_did
         credential["issuanceDate"] = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")
-
+        print('credential to issue')
         print(credential)
         # 2- Call dataseers (TODO)
         # 3 - Call Prism
@@ -43,8 +48,13 @@ async def issue_credential(unpack_msg: UnpackResult, remote_did, local_did, from
         }        
 
          # 4- Respond with issue-credential
-    
-        response_message = Message(
+        print('credential issued and stored locally')
+        print(credential)
+        # store_vc(credential)
+        
+    else:
+        pass
+    response_message = Message(
         id=str(uuid.uuid4()),
         type="https://didcomm.org/issue-credential/3.0/issue-credential",
         body=unpack_msg.message.body,
@@ -58,7 +68,4 @@ async def issue_credential(unpack_msg: UnpackResult, remote_did, local_did, from
                 )
             ]
         )
-        return response_message
-    else:
-        # TODO RETURN ERROR
-        return "ERROR"
+    return response_message

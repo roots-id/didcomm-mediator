@@ -10,11 +10,10 @@ from didcomm_v2.peer_did import get_secret_resolver
 from didcomm_v2.peer_did import DIDResolverPeerDID
 from didcomm_v2.message_dispatch import message_dispatch
 from protocols.oob import create_oob
-from db_utils import get_oob_did, store_oob_did, get_issuer_did, store_issuer_did, get_short_url
+from db_utils import get_oob_did, get_prism_holder_did, store_oob_did, get_issuer_did, store_issuer_did, get_short_url, store_prism_holder_did
 import os
-
-if "PRISM_ISSUER" in os.environ and os.environ["PRISM_ISSUER"]==1:
-    from blockchains.prism import create_prism_did
+import uuid
+from blockchains.prism import create_prism_did
 
 app = FastAPI()
 SERVER_IP = "0.0.0.0"
@@ -40,20 +39,57 @@ async def startup():
         })
     else:
         app.state.oob_did = oob["did"]
+    print('oob did: ', app.state.oob_did)
 
-    print(app.state.oob_did)
-    app.state.oob_url = create_oob(app.state.oob_did, PUBLIC_URL)
+    oob_msg = {
+        "type": "https://didcomm.org/out-of-band/2.0/invitation",
+        "id": str(uuid.uuid4()),
+        "from": app.state.oob_did,
+        "body": {
+            "goal_code": "request-mediate",
+            "goal": "Request Mediate",
+            "accept": [
+                "didcomm/v2",
+                "didcomm/aip2;env=rfc587"
+            ],
+        }
+    }
+
+    app.state.oob_url = create_oob(oob_msg, PUBLIC_URL)
     print(app.state.oob_url)
-
-    if "PRISM_ISSUER" in os.environ and os.environ["PRISM_ISSUER"]==1:
+    print()
+    if True:
         prism_did = get_issuer_did()
         print("ISSUER PRISM DID: ", prism_did)
         if not prism_did:
             prism_did = await create_prism_did()
-            store_issuer_did({
-            "did": prism_did,
-            "date": int(datetime.datetime.now().timestamp())*1000,
-            })
+            store_issuer_did(prism_did)
+            print("ISSUER PRISM DID: ", prism_did)
+            
+    #print new line
+    print()
+    print()
+    if True:
+        prism_holder_did = get_prism_holder_did()
+        print("HOLDER PRISM DID: ", prism_holder_did)
+        if not prism_holder_did:
+            prism_holder_did = await create_prism_did()
+            store_prism_holder_did(prism_holder_did)
+            print("HOLDER PRISM DID: ", prism_holder_did)
+
+    print()
+    begin_verify = {
+    "type": "https://didcomm.org/out-of-band/2.0/invitation",
+    "id": "599f3638-b563-4937-9487-dfe55099d900",
+    "from": app.state.oob_did,
+    "body": {
+        "goal_code": "streamlined-vp",
+        "accept": ["didcomm/v2"]
+        }   
+    }
+    app.state.verify_url = create_oob(begin_verify, PUBLIC_URL)
+    print("VERIFY URL: ", app.state.verify_url)
+
 
 @app.post("/", status_code=202)
 async def receive_message(request: Request):
@@ -92,6 +128,11 @@ async def get_oob_qrcode():
 async def get_oob_short_qrcode():
     ''' Return Short OOB QR Code image '''
     return FileResponse("oob_small_qrcode.png")
+
+@app.get("/verify_url")
+async def get_oob_url():
+    ''' Return VERIFY PRESENTATION URL '''
+    return Response(app.state.verify_url)
 
 @app.get("/oob_url")
 async def get_oob_url():

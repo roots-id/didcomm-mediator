@@ -2,10 +2,13 @@ from distutils.log import error
 import sys
 import os
 import time
+import datetime
 import jpype
 import jpype.imports
-from db_utils import get_prism_did, store_prism_did
-
+from db_utils import store_prism_did,get_issuer_did,get_prism_holder_did
+import ecdsa
+import hashlib
+from pyld import jsonld
 try:
     sdk_gradle_home = os.environ["ATALA_PRISM_JARS"]
 except KeyError:
@@ -34,6 +37,8 @@ try:
     from sdk.iohk.atala.prism.crypto.keys import *
     from sdk.iohk.atala.prism.identity import *
     from kotlinx.serialization.json import *
+    from sdk.iohk.atala.prism.crypto import MerkleInclusionProof
+    from sdk.iohk.atala.prism.credentials.json import JsonBasedCredential
 
     KeyGenerator = KeyGenerator.INSTANCE
     KeyDerivation = KeyDerivation.INSTANCE
@@ -116,7 +121,7 @@ def listToJsonArray(array: list):
     return JsonArray(resp)
 
 
-environment = "ppp-node-test.atalaprism.io"
+environment = "ppp.atalaprism.io"
 node_auth_api = NodeAuthApiAsyncImpl(GrpcOptions("http", environment, 50053))
 
 
@@ -124,8 +129,10 @@ async def create_prism_did():
     print("Issuer: Generates and registers a DID")
     seed = bytes(KeyDerivation.binarySeed(KeyDerivation.randomMnemonicCode(), "RootsId"))
     issuer_keys = prepare_keys_from_seed(seed)
-    issuer_unpublished_did = PrismDid.buildLongFormFromMasterPublicKey(
-        issuer_keys[PrismDid.getDEFAULT_MASTER_KEY_ID()].getPublicKey()
+    issuer_unpublished_did = PrismDid.buildExperimentalLongFormFromKeys(
+        issuer_keys[PrismDid.getDEFAULT_MASTER_KEY_ID()].getPublicKey(),
+        issuer_keys[PrismDid.getDEFAULT_ISSUING_KEY_ID()].getPublicKey(),
+        issuer_keys[PrismDid.getDEFAULT_REVOCATION_KEY_ID()].getPublicKey()
     )
     issuer_did = issuer_unpublished_did.asCanonical()
     store_prism_did(str(issuer_did), seed)
@@ -133,7 +140,9 @@ async def create_prism_did():
 
     node_payload_generator = NodePayloadGenerator(
         issuer_unpublished_did,
-        {PrismDid.getDEFAULT_MASTER_KEY_ID(): issuer_keys[PrismDid.getDEFAULT_MASTER_KEY_ID()].getPrivateKey()}
+        {PrismDid.getDEFAULT_MASTER_KEY_ID(): issuer_keys[PrismDid.getDEFAULT_MASTER_KEY_ID()].getPrivateKey(),
+        PrismDid.getDEFAULT_ISSUING_KEY_ID(): issuer_keys[PrismDid.getDEFAULT_ISSUING_KEY_ID()].getPrivateKey(),
+        PrismDid.getDEFAULT_REVOCATION_KEY_ID(): issuer_keys[PrismDid.getDEFAULT_REVOCATION_KEY_ID()].getPrivateKey()}
     )
     issuer_create_did_info = node_payload_generator.createDid(PrismDid.getDEFAULT_MASTER_KEY_ID())
     issuer_create_did_operation_id = node_auth_api.createDid(
@@ -150,7 +159,17 @@ async def create_prism_did():
     create_did_operation_result = wait_until_confirmed(node_auth_api, issuer_create_did_operation_id)
 
     print(f"- DID with id {issuer_did} is created")
-    return str(issuer_did)
+
+    stored_object = {
+    "did": str(issuer_unpublished_did.toString()),
+    str(PrismDid.getDEFAULT_MASTER_KEY_ID()): str(issuer_keys[PrismDid.getDEFAULT_MASTER_KEY_ID()].getPrivateKey().getHexEncoded()),
+    str(PrismDid.getDEFAULT_ISSUING_KEY_ID()): str(issuer_keys[PrismDid.getDEFAULT_ISSUING_KEY_ID()].getPrivateKey().getHexEncoded()),
+    str(PrismDid.getDEFAULT_REVOCATION_KEY_ID()): str(issuer_keys[PrismDid.getDEFAULT_REVOCATION_KEY_ID()].getPrivateKey().getHexEncoded()),
+    "date": int(datetime.datetime.now().timestamp())*1000,
+    "seed": bytes(seed)
+    }
+
+    return stored_object
 
 
 async def issue_prism_credential(issuer_did, subject_did, json):
@@ -158,17 +177,20 @@ async def issue_prism_credential(issuer_did, subject_did, json):
     
     subject_prism_did = PrismDid.fromString(subject_did)
 
-    issuer_seed = get_prism_did(issuer_did)["seed"]
+    issuer_seed = get_issuer_did()["seed"]
     issuer_keys = prepare_keys_from_seed(issuer_seed)
-    issuer_unpublished_did = PrismDid.buildLongFormFromMasterPublicKey(
-        issuer_keys[PrismDid.getDEFAULT_MASTER_KEY_ID()].getPublicKey()
+    issuer_unpublished_did = PrismDid.buildExperimentalLongFormFromKeys(
+        issuer_keys[PrismDid.getDEFAULT_MASTER_KEY_ID()].getPublicKey(),
+        issuer_keys[PrismDid.getDEFAULT_ISSUING_KEY_ID()].getPublicKey(),
+        issuer_keys[PrismDid.getDEFAULT_REVOCATION_KEY_ID()].getPublicKey()
     )
     issuer_prism_did = issuer_unpublished_did.asCanonical()
     node_payload_generator = NodePayloadGenerator(
         issuer_unpublished_did,
         {
             PrismDid.getDEFAULT_MASTER_KEY_ID(): issuer_keys[PrismDid.getDEFAULT_MASTER_KEY_ID()].getPrivateKey(),
-            PrismDid.getDEFAULT_ISSUING_KEY_ID(): issuer_keys[PrismDid.getDEFAULT_ISSUING_KEY_ID()].getPrivateKey()
+            PrismDid.getDEFAULT_ISSUING_KEY_ID(): issuer_keys[PrismDid.getDEFAULT_ISSUING_KEY_ID()].getPrivateKey(),
+            PrismDid.getDEFAULT_REVOCATION_KEY_ID(): issuer_keys[PrismDid.getDEFAULT_REVOCATION_KEY_ID()].getPrivateKey()
         }
     )
     credential_claim = CredentialClaim(
@@ -201,6 +223,36 @@ async def issue_prism_credential(issuer_did, subject_did, json):
     # TODO STORE CREDENTIAL
     return issue_credential_info
 
+def verify_prism_credential(credential):
+    holder_signed_credential = credential['proof']['proofValue']
+    hsc = JsonBasedCredential.fromString(holder_signed_credential)
+    inpo = {"hash":credential['proof']['proofHash'],"index":0,"siblings":[]}
+    pff = MerkleInclusionProof.decode(dictToJsonObjt(inpo).toString())
+    node_auth_api = NodeAuthApiAsyncImpl(GrpcOptions("http", environment, 50053))
+    # Verifier, who owns credentialClam, can easily verify the validity of the credentials
+    credential_verification_result = node_auth_api.verify(
+        hsc,
+        pff
+    ).join()
+
+    verification_errors = credential_verification_result.getVerificationErrors()
+    return verification_errors
 
 
-    
+def verify_proofhash(credential, challenge, signature_hex, public_key):
+
+    proof_hash = hashlib.sha256(challenge.encode('utf-8'))
+    normalized_proof = jsonld.normalize(credential, {'algorithm': 'URDNA2015', 'format': 'application/n-quads'})
+    proof_hash.update(normalized_proof.encode('utf-8'))
+    proof_hash_hexdigest = proof_hash.hexdigest()
+
+
+    seed_holder = get_prism_holder_did()['seed']
+    holder_keys = prepare_keys_from_seed(seed_holder)
+    public_key_hex_holder = holder_keys['master0'].getPublicKey().getHexEncoded()
+    public_key_hex_holder = str(public_key_hex_holder)
+    vk = ecdsa.VerifyingKey.from_string(bytes.fromhex(public_key_hex_holder), curve=ecdsa.SECP256k1, hashfunc=hashlib.sha256) # the default is sha1
+    try:
+        return vk.verify(bytes.fromhex(signature_hex), bytes.fromhex(proof_hash_hexdigest))
+    except e as Exception:
+        return False

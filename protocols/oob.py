@@ -8,22 +8,10 @@ import os
 import datetime
 
 
-def create_oob(did, url):
+def create_oob(message, url):
     """ Create Out of band Message """
-    oob_mesage = {
-        "type": "https://didcomm.org/out-of-band/2.0/invitation",
-        "id": str(uuid.uuid4()),
-        "from": did,
-        "body": {
-            "goal_code": "request-mediate",
-            "goal": "Request Mediate",
-            "accept": [
-                "didcomm/v2",
-                "didcomm/aip2;env=rfc587"
-            ],
-        }
-    }
-    plaintext_ws_removed = json.dumps(oob_mesage).replace(" ", "")
+
+    plaintext_ws_removed = json.dumps(message).replace(" ", "")
     encoded_plaintextjwm = base64.urlsafe_b64encode(
         plaintext_ws_removed.encode("utf-8"))
     encoded_text = str(encoded_plaintextjwm, "utf-8").replace("=", "")

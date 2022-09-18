@@ -12,9 +12,10 @@ from protocols.discover_features import process_discover_queries
 from protocols.action_menu import process_action_menu_message
 from protocols.shorten_url import process_shorten_url_message
 from db_utils import create_connection, get_connection, update_connection
+
+from protocols.presentation_exchange import process_presentation_exchange_message
 import os
-if "PRISM_ISSUER" in os.environ and os.environ["PRISM_ISSUER"]==1:
-    from protocols.issue_credential import process_issue_credential_message
+from protocols.issue_credential import process_issue_credential_message
 
 
 async def message_dispatch(unpack_msg:UnpackResult):
@@ -60,6 +61,8 @@ async def message_dispatch(unpack_msg:UnpackResult):
             return await process_discover_queries(unpack_msg, sender_did, connection_did, from_prior)
         elif unpack_msg.message.type.startswith("https://didcomm.org/issue-credential/3.0/"):
             return await process_issue_credential_message(unpack_msg, sender_did, connection_did, from_prior)
+        elif unpack_msg.message.type.startswith("https://didcomm.org/present-proof/3.0/"):
+            return await process_presentation_exchange_message(unpack_msg, sender_did, connection_did, from_prior)
         elif unpack_msg.message.type.startswith("https://didcomm.org/action-menu/2.0/"):
             return await process_action_menu_message(unpack_msg, sender_did, connection_did, from_prior)
         elif unpack_msg.message.type.startswith("https://didcomm.org/shorten-url/1.0/"):
