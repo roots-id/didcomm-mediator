@@ -82,7 +82,7 @@ class DIDResolverPeerDID(DIDResolver):
                 )
                 for m in did_doc.authentication + did_doc.key_agreement
             ],
-            # didcomm_services=[
+            didcomm_services=[]
             #     DIDCommService(
             #         id=s.id,
             #         service_endpoint=s.service_endpoint,
