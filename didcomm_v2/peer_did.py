@@ -82,16 +82,16 @@ class DIDResolverPeerDID(DIDResolver):
                 )
                 for m in did_doc.authentication + did_doc.key_agreement
             ],
-            didcomm_services=[
-                DIDCommService(
-                    id=s.id,
-                    service_endpoint=s.service_endpoint,
-                    routing_keys=s.routing_keys,
-                    accept=s.accept
-                )
-                for s in did_doc.service
-                if isinstance(s, DIDCommServicePeerDID)
-            ] if did_doc.service else []
+            # didcomm_services=[
+            #     DIDCommService(
+            #         id=s.id,
+            #         service_endpoint=s.service_endpoint,
+            #         routing_keys=s.routing_keys,
+            #         accept=s.accept
+            #     )
+            #     for s in did_doc.service
+            #     if isinstance(s, DIDCommServicePeerDID)
+            # ] if did_doc.service else []
         )
 
 
