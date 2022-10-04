@@ -14,6 +14,7 @@ Pipfile.lock
 .DS_Store
 secrets.json
 oob_qrcode.png
+oob_small_qrcode.png
 prism-cli-v*/
 *-workspace
 docker-compose.yml

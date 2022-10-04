@@ -7,7 +7,6 @@ from db_utils import store_short_url
 import os
 import datetime
 
-
 def create_oob(did, url):
     """ Create Out of band Message """
     oob_mesage = {
@@ -17,9 +16,9 @@ def create_oob(did, url):
         "body": {
             "goal_code": "request-mediate",
             "goal": "Request Mediate",
+            "label": "Mediator",
             "accept": [
-                "didcomm/v2",
-                "didcomm/aip2;env=rfc587"
+                "didcomm/v2"
             ],
         }
     }
