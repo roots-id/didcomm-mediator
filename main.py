@@ -74,7 +74,12 @@ async def receive_message(request: Request):
         raise HTTPException(status_code=400, detail='Malformed Message')
     else:
         print(unpack_msg.message.type)
-        return json.loads(await message_dispatch(unpack_msg))
+        resp = await message_dispatch(unpack_msg)
+        if resp:
+            return json.loads(await message_dispatch(unpack_msg))
+        else:
+            return
+        
 
             # if {"return_route": "all"} in unpack_msg.message.custom_headers 
             # or {"return_route": "thread"} in unpack_msg.message.custom_headers:
