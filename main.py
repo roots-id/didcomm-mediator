@@ -76,7 +76,7 @@ async def receive_message(request: Request):
         print(unpack_msg.message.type)
         resp = await message_dispatch(unpack_msg)
         if resp:
-            return json.loads(await message_dispatch(unpack_msg))
+            return json.loads(resp)
         else:
             return
         
