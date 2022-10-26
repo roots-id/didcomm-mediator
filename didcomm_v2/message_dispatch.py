@@ -13,8 +13,8 @@ from protocols.action_menu import process_action_menu_message
 from protocols.shorten_url import process_shorten_url_message
 from db_utils import create_connection, get_connection, update_connection
 import os
-if "PRISM_ISSUER" in os.environ and os.environ["PRISM_ISSUER"]==1:
-    from protocols.issue_credential import process_issue_credential_message
+from protocols.issue_credential import process_issue_credential_message
+
 
 
 async def message_dispatch(unpack_msg:UnpackResult):

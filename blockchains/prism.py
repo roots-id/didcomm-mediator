@@ -157,8 +157,7 @@ async def issue_prism_credential(issuer_did, subject_did, json):
     claim = dictToJsonObjt(json)
     
     subject_prism_did = PrismDid.fromString(subject_did)
-
-    issuer_seed = get_prism_did(issuer_did)["seed"]
+    issuer_seed = get_prism_did("did:prism:"+issuer_did.split(":")[2])["seed"]
     issuer_keys = prepare_keys_from_seed(issuer_seed)
     issuer_unpublished_did = PrismDid.buildLongFormFromMasterPublicKey(
         issuer_keys[PrismDid.getDEFAULT_MASTER_KEY_ID()].getPublicKey()

@@ -18,3 +18,4 @@ oob_small_qrcode.png
 prism-cli-v*/
 *-workspace
 docker-compose.yml
+.python-version

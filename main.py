@@ -13,8 +13,7 @@ from protocols.oob import create_oob
 from db_utils import get_oob_did, store_oob_did, get_issuer_did, store_issuer_did, get_short_url
 import os
 import json
-
-if "PRISM_ISSUER" in os.environ and os.environ["PRISM_ISSUER"]==1:
+if "PRISM_ISSUER" in os.environ and os.environ["PRISM_ISSUER"]=="1":
     from blockchains.prism import create_prism_did
 
 app = FastAPI()
@@ -46,7 +45,7 @@ async def startup():
     app.state.oob_url = create_oob(app.state.oob_did, PUBLIC_URL)
     print(app.state.oob_url)
 
-    if "PRISM_ISSUER" in os.environ and os.environ["PRISM_ISSUER"]==1:
+    if "PRISM_ISSUER" in os.environ and os.environ["PRISM_ISSUER"]=="1":
         prism_did = get_issuer_did()
         print("ISSUER PRISM DID: ", prism_did)
         if not prism_did:
