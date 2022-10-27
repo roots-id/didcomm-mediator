@@ -50,7 +50,7 @@ async def issue_credential(unpack_msg: UnpackResult, remote_did, local_did, from
             credential["issuer"] = {
                 "type": "Profile",
                 "id": issuer_did,
-                "name": "Jobs for the Future (JFF)",
+                "name": "IIW 2022",
                 "url": "https://www.jff.org/",
                 "image": "https://kayaelle.github.io/vc-ed/plugfest-1-2022/images/JFF_LogoLockup.png"
             }
