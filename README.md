@@ -51,7 +51,7 @@ pip install requirements.txt
 This mediator use [MongoDB](https://www.mongodb.com) as Data Base. You need to have it installed before running. One installaton option is with docker as:
 ```
 docker pull mongo
-docker run --name mongo_example -d mongo
+docker run --name mongo -d mongo -p 27017:27017
 ```
 
 ### Envirnomental varables

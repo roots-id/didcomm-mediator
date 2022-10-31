@@ -27,7 +27,8 @@ app.state.oob_url = None
 async def startup():
     """ Server start up """
     print("Server Start up")
-    oob = get_oob_did()
+    # oob = get_oob_did()
+    oob = None
     print(oob)
     if not oob or os.environ["ROTATE_OOB"]=="1":
         print("Generating OOB")

@@ -50,7 +50,7 @@ async def issue_credential(unpack_msg: UnpackResult, remote_did, local_did, from
          # 4- Respond with issue-credential
         print('credential issued and stored locally')
         print(credential)
-        # store_vc(credential)
+        store_vc(credential)
         
     else:
         pass
