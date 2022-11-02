@@ -33,6 +33,7 @@ decorator==5.1.1
 deepmerge==0.3.0
 defusedxml==0.7.1
 didcomm==0.3.0
+didkit==0.3.1
 -e git+https://github.com/sicpa-dlab/didcomm-demo.git@ec966cae26a8b015a14ed16526a287d1501313cc#egg=didcomm_demo&subdirectory=didcomm-demo-python
 ecdsa==0.16.1
 entrypoints==0.4

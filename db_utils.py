@@ -43,8 +43,20 @@ def get_oob_did():
 def store_oob_did(did):
     db.oobs.insert_one(did)
 
-def get_issuer_did():
-    issuer_did = db.issuers.find_one(sort=[('date', -1)])
+def del_issuers():
+    db.messaissuersges.delete_many({})
+    
+def get_demo_issuer_did():
+    #get the issuer whose did fields starts with "did:peer"
+    
+    issuer_did= db.issuers.find_one({"did": {"$regex": "^did:key"}},sort=[('date', -1)])
+    # issuer_did = db.issuers.find_one(sort=[('date', -1)])
+    return issuer_did
+
+def get_prism_issuer_did():
+    #get the issuer whose did fields starts with "did:peer"
+    issuer_did= db.issuers.find_one({"did": {"$regex": "^did:prism"}})
+    # issuer_did = db.issuers.find_one(sort=[('date', -1)])
     return issuer_did["did"] if issuer_did is not None else None
 
 def store_issuer_did(did):

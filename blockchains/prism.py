@@ -116,7 +116,7 @@ def listToJsonArray(array: list):
     return JsonArray(resp)
 
 
-environment = "ppp-node-test.atalaprism.io"
+environment = "ppp-vasil.atalaprism.io"
 node_auth_api = NodeAuthApiAsyncImpl(GrpcOptions("http", environment, 50053))
 
 
