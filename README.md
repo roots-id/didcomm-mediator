@@ -11,7 +11,7 @@ This Mediator implements the following protocols:
 * [Peer DID Method Specification](https://identity.foundation/peer-did-method-spec/)
 * [HTTPS Transport](https://identity.foundation/didcomm-messaging/spec/#https)
 
-### Extra features
+### Extra features 
 This mediator also implements the following features that can be used as a playground to test other protocols:
 * [Trust Ping Protocol 2.0](https://identity.foundation/didcomm-messaging/spec/#trust-ping-protocol-20)
 * [Discover Features Protocol 2.0](https://identity.foundation/didcomm-messaging/spec/#discover-features-protocol-20)
