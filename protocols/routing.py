@@ -7,7 +7,6 @@ from didcomm.unpack import UnpackResult
 from importlib_metadata import metadata
 from didcomm_v2.peer_did import get_secret_resolver
 from didcomm_v2.peer_did import DIDResolverPeerDID
-from didcomm_v2.peer_did import create_peer_did
 from db_utils import add_message
 
 

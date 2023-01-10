@@ -51,5 +51,5 @@ async def process_discover_queries(unpack_msg: UnpackResult, remote_did, local_d
         sign_frm=None,
         pack_config=PackEncryptedConfig(protect_sender_id=False)
     )
-    await send_http_msg(response_packed, remote_did, local_did)
+    return response_packed.packed_msg
     

@@ -1,4 +1,4 @@
-from didcomm_v2.peer_did import resolve_peer_did, create_peer_did
+from didcomm_v2.peer_did import  create_peer_did
 from didcomm.message import Message
 from didcomm.message import Attachment, AttachmentDataJson
 from didcomm.pack_encrypted import pack_encrypted, PackEncryptedConfig

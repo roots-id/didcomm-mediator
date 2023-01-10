@@ -94,8 +94,11 @@ TODO add flow diagram
 
 ## Build docker
 ```
-docker build -f ./Dockerfile . --platform=linux/amd64 -t rodopincha/didcomm-mediator
-docker push rodopincha/didcomm-mediator 
-docker run -p 8000:8000 rodopincha/didcomm-mediator
+docker build -f ./Dockerfile . --platform=linux/amd64 -t didcomm-mediator
+docker run -p 8000:8000  \
+-e DB_URL=mongodb://host.docker.internal:27017 \
+-e ROTATE_OOB=0 \
+-e PUBLIC_URL=http://localhost:8000 \
+didcomm-mediator
 ```
 

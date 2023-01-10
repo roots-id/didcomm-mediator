@@ -30,4 +30,5 @@ async def process_trust_ping(unpack_msg:UnpackResult):
             sign_frm=None,
             pack_config=PackEncryptedConfig(protect_sender_id=False)
         )
-        await send_http_msg(response_packed, unpack_msg.metadata.encrypted_from.split("#")[0], unpack_msg.metadata.encrypted_to[0].split("#")[0])
+        # await send_http_msg(response_packed, unpack_msg.metadata.encrypted_from.split("#")[0], unpack_msg.metadata.encrypted_to[0].split("#")[0])
+        return response_packed.packed_msg

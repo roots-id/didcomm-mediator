@@ -53,23 +53,6 @@ def get_demo_issuer_did():
     # issuer_did = db.issuers.find_one(sort=[('date', -1)])
     return issuer_did
 
-def get_prism_issuer_did():
-    #get the issuer whose did fields starts with "did:peer"
-    issuer_did= db.issuers.find_one({"did": {"$regex": "^did:prism"}})
-    # issuer_did = db.issuers.find_one(sort=[('date', -1)])
-    return issuer_did["did"] if issuer_did is not None else None
-
-def store_issuer_did(did):
-    db.issuers.insert_one(did)
-
-def get_prism_did(did):
-    return db.prism.find_one({"did": did})
-
-def store_prism_did(did,seed):
-    db.prism.insert_one({
-        "did": did,
-        "seed": seed
-    })
 
 def add_mediation(remote_did, routing_did, endpoint):
     ''' Add mediation info to connection '''
@@ -141,8 +124,12 @@ def get_message_status(remote_did, recipient_key):
     if recipient_key:
         count = db.messages.count_documents({"recipient_key": recipient_key},{"attachment":1})
     else:
-        recipient_keys = db.connections.find_one({"remote_did":remote_did})["keylist"]
-        count = db.messages.count_documents({"recipient_key": {"$in":recipient_keys}})
+        resp = db.connections.find_one({"remote_did":remote_did})
+        if "keylist" in resp : 
+            recipient_keys = resp["keylist"]
+            count = db.messages.count_documents({"recipient_key": {"$in":recipient_keys}})
+        else:
+            count = 0
     return count
 
 def get_messages(remote_did, recipient_key,limit):
