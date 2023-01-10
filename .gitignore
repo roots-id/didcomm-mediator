@@ -21,3 +21,4 @@ docker-compose.yml
 .python-version
 
 invitationQR
+src/didcomm-demo/

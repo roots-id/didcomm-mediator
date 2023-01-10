@@ -13,8 +13,6 @@ from protocols.oob import create_oob,create_invitation_url
 from db_utils import get_oob_did, store_oob_did, get_prism_issuer_did, store_issuer_did, get_short_url, get_demo_issuer_did, del_issuers
 import os
 import json
-if "PRISM_ISSUER" in os.environ and os.environ["PRISM_ISSUER"]=="1":
-    from blockchains.prism import create_prism_did
 
 app = FastAPI()
 SERVER_IP = "0.0.0.0"
@@ -59,15 +57,6 @@ async def startup():
     app.state.invitation_url = create_invitation_url(app.state.oob_did,PUBLIC_URL,_iss['did'])
     print(app.state.oob_url)
 
-    if "PRISM_ISSUER" in os.environ and os.environ["PRISM_ISSUER"]=="1":
-        prism_did = get_issuer_did()
-        print("ISSUER PRISM DID: ", prism_did)
-        if not prism_did:
-            prism_did = await create_prism_did()
-            store_issuer_did({
-            "did": prism_did,
-            "date": int(datetime.datetime.now().timestamp())*1000,
-            })
 
 @app.post("/", status_code=202)
 async def receive_message(request: Request):
