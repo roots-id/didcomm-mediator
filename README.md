@@ -94,7 +94,7 @@ TODO add flow diagram
 
 ## Build docker
 ```
-docker build -f ./Dockerfile . --platform=linux/amd64 -t didcomm-mediator
+docker build -f ./Dockerfile .  -t didcomm-mediator // use --platform=linux/amd64 if needed
 docker run -p 8000:8000  \
 -e DB_URL=mongodb://host.docker.internal:27017 \
 -e ROTATE_OOB=0 \

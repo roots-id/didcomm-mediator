@@ -127,9 +127,11 @@ def index():
         <div>
             <body>
                 <h1>RootsID DIDComm v2 Mediator</h1>
-                <h3>Scan the QR code below with your Identity Wallet to start a mediation request\n</h3>
-            <img src="/oob_small_qrcode" alt="QR code" width="500" height="500">
-        </body>
+                <h3>Scan the QR code shown below with your Identity Wallet to start a mediation request:\n</h3>
+                <img src="/oob_small_qrcode" alt="QR code" width="500" height="500">
+                <h3>\n\nYou can also scan the full QR code:\n</h3>
+                <img src="/oob_qrcode" alt="QR code" width="500" height="500">
+            </body>
         </div>
 
     </html>
