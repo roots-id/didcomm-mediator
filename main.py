@@ -2,7 +2,7 @@
 import datetime
 import uvicorn
 from fastapi import Request, FastAPI, HTTPException
-from fastapi.responses import FileResponse, Response, RedirectResponse
+from fastapi.responses import FileResponse, Response, RedirectResponse, HTMLResponse
 from didcomm.unpack import unpack
 from didcomm.common.resolvers import ResolversConfig
 from didcomm_v2.peer_did import create_peer_did
@@ -13,8 +13,6 @@ from protocols.oob import create_oob
 from db_utils import get_oob_did, store_oob_did, get_issuer_did, store_issuer_did, get_short_url
 import os
 import json
-if "PRISM_ISSUER" in os.environ and os.environ["PRISM_ISSUER"]=="1":
-    from blockchains.prism import create_prism_did
 
 app = FastAPI()
 SERVER_IP = "0.0.0.0"
@@ -44,16 +42,6 @@ async def startup():
     print(app.state.oob_did)
     app.state.oob_url = create_oob(app.state.oob_did, PUBLIC_URL)
     print(app.state.oob_url)
-
-    if "PRISM_ISSUER" in os.environ and os.environ["PRISM_ISSUER"]=="1":
-        prism_did = get_issuer_did()
-        print("ISSUER PRISM DID: ", prism_did)
-        if not prism_did:
-            prism_did = await create_prism_did()
-            store_issuer_did({
-            "did": prism_did,
-            "date": int(datetime.datetime.now().timestamp())*1000,
-            })
 
 @app.post("/", status_code=202)
 async def receive_message(request: Request):
@@ -127,8 +115,23 @@ async def redirect_shortened_url(_oobid):
 
 
 @app.get("/")
-def health_check(_oob):
-    return
+def index():
+    html_content = """
+    <html>
+        <head>
+            <title>RootsID DIDComm v2 Mediator</title>
+        </head>
+        <div>
+            <body>
+                <h1>RootsID DIDComm v2 Mediator</h1>
+                <h3>Scan the QR code below with your Identity Wallet to start a mediation request\n</h3>
+            <img src="/oob_small_qrcode" alt="QR code" width="500" height="500">
+        </body>
+        </div>
+
+    </html>
+    """
+    return HTMLResponse(content=html_content, status_code=200)
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host=SERVER_IP, port=SERVER_PORT, reload=True)

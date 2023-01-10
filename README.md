@@ -16,7 +16,6 @@ This mediator also implements the following features that can be used as a playg
 * [Trust Ping Protocol 2.0](https://identity.foundation/didcomm-messaging/spec/#trust-ping-protocol-20)
 * [Discover Features Protocol 2.0](https://identity.foundation/didcomm-messaging/spec/#discover-features-protocol-20)
 * [Basic Message Protocol 2.0](https://didcomm.org/basicmessage/2.0/)
-* [WACI PEx Issue Credential Protocol 3.0]()
 * [Shorten URL Protocol 1.0]()
 * [Action Menu Protocol 2.0](https://didcomm.org/action-menu/2.0/)
 * [Question Answer Protocol 2.0]()
@@ -100,22 +99,3 @@ docker push rodopincha/didcomm-mediator
 docker run -p 8000:8000 rodopincha/didcomm-mediator
 ```
 
-## ATALA Prism Credential Issuer
-In order to issue Prism Credentials you need Java 11 and download Prism SDK (need a Prism SDK password from IOG). This agent use JPype as a wrapper to access Java classes from Python. 
-
-1- Export your Prism SDK Password: `export PRISM_SDK_PASSWORD="ghp_..."`
-
-2- Download anx extract the JVM SDK
-```
-curl "https://maven.pkg.github.com/input-output-hk/atala-prism-sdk/io/iohk/atala/prism-cli/v1.4.1/prism-cli-v1.4.1.zip" -H "Authorization: Bearer ${PRISM_SDK_PASSWORD}" -L -O
-unzip prism-cli-v1.4.1.zip
-```
-3- Export JAVA_HOME and ATALA_PRISM_JARS as follows:
-```
-export JAVA_HOME=<java_home_directory>
-export ATALA_PRISM_JARS="<working_dir>/prism-cli-v1.4.1/lib"
-```
-4- Export Prism Issuer switch
-```
-export PRISM_ISSUER=1
-```

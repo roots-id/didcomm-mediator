@@ -6,6 +6,8 @@ from didcomm.common.resolvers import ResolversConfig
 from didcomm.unpack import UnpackResult
 from didcomm_v2.peer_did import get_secret_resolver
 from didcomm_v2.peer_did import DIDResolverPeerDID
+from didcomm_v2.send_http_message import send_http_msg
+
 import re
 supported_protocols = [
     "https://didcomm.org/basicmessage/2.0",
@@ -15,8 +17,7 @@ supported_protocols = [
     "https://didcomm.org/trust-ping/2.0",
     "https://didcomm.org/discover-features/2.0",
     "https://didcomm.org/action-menu/2.0",
-    "https://didcomm.org/shorten-url/1.0/",
-    "https://didcomm.org/issue-credential/3.0"
+    "https://didcomm.org/shorten-url/1.0/"
 ]
 
 async def process_discover_queries(unpack_msg: UnpackResult, remote_did, local_did, from_prior: FromPrior):
@@ -50,4 +51,5 @@ async def process_discover_queries(unpack_msg: UnpackResult, remote_did, local_d
         sign_frm=None,
         pack_config=PackEncryptedConfig(protect_sender_id=False)
     )
-    return response_packed.packed_msg
+    await send_http_msg(response_packed, remote_did, local_did)
+    

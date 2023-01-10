@@ -132,7 +132,8 @@ async def create_peer_did(self,
         service = json.dumps(
             DIDCommServicePeerDID(
                 id="new-id",
-                service_endpoint=service_endpoint, routing_keys=service_routing_keys,
+                service_endpoint=service_endpoint, 
+                routing_keys=service_routing_keys,
                 accept=["didcomm/v2"]
             ).to_dict()
         )

@@ -13,7 +13,6 @@ from protocols.action_menu import process_action_menu_message
 from protocols.shorten_url import process_shorten_url_message
 from db_utils import create_connection, get_connection, update_connection
 import os
-from protocols.issue_credential import process_issue_credential_message
 
 
 
@@ -58,8 +57,6 @@ async def message_dispatch(unpack_msg:UnpackResult):
             return await process_forward_message(unpack_msg, sender_did, connection_did, from_prior)
         elif unpack_msg.message.type == "https://didcomm.org/discover-features/2.0/queries":
             return await process_discover_queries(unpack_msg, sender_did, connection_did, from_prior)
-        elif unpack_msg.message.type.startswith("https://didcomm.org/issue-credential/3.0/"):
-            return await process_issue_credential_message(unpack_msg, sender_did, connection_did, from_prior)
         elif unpack_msg.message.type.startswith("https://didcomm.org/action-menu/2.0/"):
             return await process_action_menu_message(unpack_msg, sender_did, connection_did, from_prior)
         elif unpack_msg.message.type.startswith("https://didcomm.org/shorten-url/1.0/"):

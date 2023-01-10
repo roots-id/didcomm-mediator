@@ -6,6 +6,8 @@ from didcomm.unpack import UnpackResult
 from didcomm.common.resolvers import ResolversConfig
 from didcomm_v2.peer_did import get_secret_resolver
 from didcomm_v2.peer_did import DIDResolverPeerDID
+from didcomm_v2.send_http_message import send_http_msg
+
 
 
 async def process_trust_ping(unpack_msg:UnpackResult):
@@ -28,4 +30,4 @@ async def process_trust_ping(unpack_msg:UnpackResult):
             sign_frm=None,
             pack_config=PackEncryptedConfig(protect_sender_id=False)
         )
-        return response_packed.packed_msg
+        await send_http_msg(response_packed, unpack_msg.metadata.encrypted_from.split("#")[0], unpack_msg.metadata.encrypted_to[0].split("#")[0])

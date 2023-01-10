@@ -19,3 +19,5 @@ prism-cli-v*/
 *-workspace
 docker-compose.yml
 .python-version
+
+invitationQR
