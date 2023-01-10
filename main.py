@@ -9,10 +9,12 @@ from didcomm_v2.peer_did import create_peer_did
 from didcomm_v2.peer_did import get_secret_resolver
 from didcomm_v2.peer_did import DIDResolverPeerDID
 from didcomm_v2.message_dispatch import message_dispatch
-from protocols.oob import create_oob
-from db_utils import get_oob_did, store_oob_did, get_issuer_did, store_issuer_did, get_short_url
+from protocols.oob import create_oob,create_invitation_url
+from db_utils import get_oob_did, store_oob_did, get_prism_issuer_did, store_issuer_did, get_short_url, get_demo_issuer_did, del_issuers
 import os
 import json
+if "PRISM_ISSUER" in os.environ and os.environ["PRISM_ISSUER"]=="1":
+    from blockchains.prism import create_prism_did
 
 app = FastAPI()
 SERVER_IP = "0.0.0.0"
@@ -21,6 +23,7 @@ PUBLIC_URL = os.environ["PUBLIC_URL"] if "PUBLIC_URL" in os.environ  else "http:
 secrets_resolver = get_secret_resolver()
 app.state.oob_did = None
 app.state.oob_url = None
+app.state.invitation_url = None
 
 @app.on_event("startup")
 async def startup():
@@ -41,7 +44,30 @@ async def startup():
 
     print(app.state.oob_did)
     app.state.oob_url = create_oob(app.state.oob_did, PUBLIC_URL)
+
+
+    del_issuers()
+    demo_issuer_did , demo_issuer_jwk= generate_ed25519_key()
+    store_issuer_did({
+            "did": demo_issuer_did,
+            'jwk':demo_issuer_jwk,
+            "date": int(datetime.datetime.now().timestamp())*1000,
+            })
+    _iss = get_demo_issuer_did()
+    print("Demo Issuer DID: ",_iss)
+
+    app.state.invitation_url = create_invitation_url(app.state.oob_did,PUBLIC_URL,_iss['did'])
     print(app.state.oob_url)
+
+    if "PRISM_ISSUER" in os.environ and os.environ["PRISM_ISSUER"]=="1":
+        prism_did = get_issuer_did()
+        print("ISSUER PRISM DID: ", prism_did)
+        if not prism_did:
+            prism_did = await create_prism_did()
+            store_issuer_did({
+            "did": prism_did,
+            "date": int(datetime.datetime.now().timestamp())*1000,
+            })
 
 @app.post("/", status_code=202)
 async def receive_message(request: Request):
@@ -90,6 +116,11 @@ async def get_oob_short_qrcode():
 async def get_oob_url():
     ''' Return OOB URL '''
     return Response(app.state.oob_url)
+
+@app.get("/invitation_url")
+async def get_ivitation_url():
+    ''' Return OOB URL '''
+    return Response(app.state.invitation_url)
 
 @app.get("/qr")
 async def redirect_shortened_url(_oobid):
