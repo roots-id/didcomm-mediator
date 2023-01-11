@@ -7,7 +7,7 @@ This Mediator implements the following protocols:
 * [Routing Protocol 2.0](https://identity.foundation/didcomm-messaging/spec/#routing-protocol-20)
 * [DIDComm v2 Return-Route Extension](https://github.com/decentralized-identity/didcomm-messaging/blob/main/extensions/return_route/main.md)
 * [Mediator Coordination Protocol 2.0](https://didcomm.org/mediator-coordination/2.0/)
-* [Pickup Protocol 3.0](https://didcomm.org/pickup/3.0/)
+* [Pickup Protocol 3.0](https://didcomm.org/pickup/3.0/): messages processed by this mediator are responded in the same channel (in the response body of the http POST request). It does not enforce the `return_route` header extencion (pending TODO).
 * [Peer DID Method Specification](https://identity.foundation/peer-did-method-spec/)
 * [HTTPS Transport](https://identity.foundation/didcomm-messaging/spec/#https)
 
