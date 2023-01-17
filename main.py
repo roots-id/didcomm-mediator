@@ -121,7 +121,6 @@ async def redirect_shortened_url(_oobid):
 def index():
     with open('web/index.html') as f:
         html_content = f.read()
-    print(html_content)
     return HTMLResponse(content=html_content, status_code=200)
 
 @app.get("/rootsIdLogo")
