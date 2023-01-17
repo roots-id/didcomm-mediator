@@ -119,24 +119,15 @@ async def redirect_shortened_url(_oobid):
 
 @app.get("/")
 def index():
-    html_content = """
-    <html>
-        <head>
-            <title>RootsID DIDComm v2 Mediator</title>
-        </head>
-        <div>
-            <body>
-                <h1>RootsID DIDComm v2 Mediator</h1>
-                <h3>Scan the QR code shown below with your Identity Wallet to start a mediation request:\n</h3>
-                <img src="/oob_small_qrcode" alt="QR code" width="500" height="500">
-                <h3>\n\nYou can also scan the full QR code:\n</h3>
-                <img src="/oob_qrcode" alt="QR code" width="500" height="500">
-            </body>
-        </div>
-
-    </html>
-    """
+    with open('web/index.html') as f:
+        html_content = f.read()
+    print(html_content)
     return HTMLResponse(content=html_content, status_code=200)
+
+@app.get("/rootsIdLogo")
+async def get_oob_short_qrcode():
+    ''' Return RootsID Logo '''
+    return FileResponse("web/rootsIdLogo.png")
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host=SERVER_IP, port=SERVER_PORT, reload=True)
