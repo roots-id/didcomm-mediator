@@ -1,5 +1,9 @@
-## RootsID DIDComm v2 Mediator
+# RootsID DIDComm v2 Mediator
 
+## RootsID Cloud instance live!
+We have deployed an instance of the mediator. You can use it to test your agents. The URL is: https://mediator.rootsid.cloud
+
+## Features
 This Mediator implements the following protocols:
 
 * [DIF DIDComm Messaging V2](https://identity.foundation/didcomm-messaging/spec/)
@@ -29,22 +33,12 @@ DIDComm and Peer DID were implemented with the help of the following amazing lib
 * [sicpa-dlab/didcomm-python](https://github.com/sicpa-dlab/didcomm-python)
 * [sicpa-dlab/peer-did-python](https://github.com/sicpa-dlab/peer-did-python)
 
-## RootsID Cloud instance live!
-We have deployed an instance of the mediator in the cloud for testing, demoing, and learning.
-Your identity wallet can scan the following Out of Band invitation QR code and request mediation:
-
-![QR Code](https://mediator.rootsid.cloud/oob_qrcode)
-
-Or scan the small QR code (OOB D) that redirect to the big one:
-
-![Small QR Code](https://mediator.rootsid.cloud/oob_small_qrcode)
-
 
 ### Installation
 ```
 python -m venv ./venv 
 source ./venv/bin/activate
-pip install requirements.txt
+pip install -r requirements.txt
 ```
 ### Mongo DB
 This mediator use [MongoDB](https://www.mongodb.com) as Data Base. You need to have it installed before running. One installaton option is with docker as:
