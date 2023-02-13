@@ -2,13 +2,15 @@ import json
 import base64
 import qrcode
 import requests
+import asyncio
 import datetime
 import uuid
 import matplotlib.pyplot as plt
+from pprint import pprint
 from pymongo import MongoClient
 from typing import Optional, List
 from didcomm.common.types import DID, VerificationMethodType, VerificationMaterial, VerificationMaterialFormat
-from didcomm.did_doc.did_doc import DIDDoc, VerificationMethod, DIDCommService
+from didcomm.did_doc.did_doc import DIDDoc, VerificationMethod
 from didcomm.did_doc.did_resolver import DIDResolver
 from didcomm.message import Message, FromPrior
 from didcomm.secrets.secrets_resolver_demo import SecretsResolverDemo
@@ -21,6 +23,7 @@ from peerdid import peer_did
 from peerdid.did_doc import DIDDocPeerDID
 from peerdid.types import VerificationMaterialAuthentication, VerificationMethodTypeAuthentication, VerificationMaterialAgreement, VerificationMethodTypeAgreement, VerificationMaterialFormatPeerDID
 secrets_resolver = SecretsResolverDemo()
+
 class DIDResolverPeerDID(DIDResolver):
     async def resolve(self, did: DID) -> DIDDoc:
         did_doc_json = peer_did.resolve_peer_did(did, format = VerificationMaterialFormatPeerDID.JWK)
@@ -110,12 +113,9 @@ async def create_peer_did(self,
 
         return did
 
-mediator_url = "https://mediator.rootsid.cloud/oob_url"
 
-from pprint import pprint
 async def ping_endpoint(mediator_url):
     oob_url = requests.get(mediator_url).text
-    oob_url = requests.get("https://mediator.rootsid.cloud/oob_url").text
     received_msg_encoded = oob_url.split("=")[1]
     received_msg_decoded = json.loads(str(base64.urlsafe_b64decode(received_msg_encoded + "=="), "utf-8"))
     alice_did_for_mediator = await create_peer_did(1,1)
@@ -180,5 +180,6 @@ async def ping_endpoint(mediator_url):
     print(trust_ping_response.message.type)
 
 
-import asyncio
+
+mediator_url = "https://mediator.rootsid.cloud/oob_url"
 asyncio.run(ping_endpoint(mediator_url))
