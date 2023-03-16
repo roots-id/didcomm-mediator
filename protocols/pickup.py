@@ -23,7 +23,13 @@ async def process_pickup_message(unpack_msg: UnpackResult, remote_did, local_did
 
 
 async def process_status_request(unpack_msg: UnpackResult, remote_did, local_did, from_prior: FromPrior):
-    recipient_key =  unpack_msg.message.body["recipient_key"] if "recipient_key" in unpack_msg.message.body else None
+    if  "recipient_key" in unpack_msg.message.body:
+         recipient_key =  unpack_msg.message.body["recipient_key"]
+    elif "recipient_did" in unpack_msg.message.body:
+         recipient_key =  unpack_msg.message.body["recipient_did"]
+    else:
+        recipient_key = None
+          
     count = get_message_status(remote_did, recipient_key)
     # TODO add optional info 
     response_message = Message(
@@ -55,7 +61,7 @@ async def process_status_request(unpack_msg: UnpackResult, remote_did, local_did
 
 
 async def process_delivery_request(unpack_msg: UnpackResult, remote_did, local_did, from_prior: FromPrior):
-    recipient_key =  unpack_msg.message.body["recipient_key"] if "recipient_key" in unpack_msg.message.body else None
+    recipient_key =  unpack_msg.message.body["recipient_did"] if "recipient_did" in unpack_msg.message.body else None
     limit = unpack_msg.message.body["limit"] 
     messages = get_messages(remote_did, recipient_key,int(limit))
     if len(list(messages)) == 0:

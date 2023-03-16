@@ -122,6 +122,7 @@ def update_keys(remote_did, updates):
 
 def get_message_status(remote_did, recipient_key):
     if recipient_key:
+        # FIX validate that recipient_key belongs to remote_did
         count = db.messages.count_documents({"recipient_key": recipient_key},{"attachment":1})
     else:
         resp = db.connections.find_one({"remote_did":remote_did})
@@ -134,10 +135,16 @@ def get_message_status(remote_did, recipient_key):
 
 def get_messages(remote_did, recipient_key,limit):
     if recipient_key:
+        # FIX validate that recipient_key belongs to remote_did
         return db.messages.find({"recipient_key": recipient_key},{"attachment":1}).limit(limit)
     else:
-        recipient_keys = db.connections.find_one({"remote_did":remote_did})["keylist"]
-        return list(db.messages.find({"recipient_key": {"$in":recipient_keys}}).limit(limit))
+        connection = db.connections.find_one({"remote_did":remote_did})
+        if "keylist" in connection:
+            recipient_keys = connection["keylist"]
+            return list(db.messages.find({"recipient_key": {"$in":recipient_keys}}).limit(limit))
+        else:
+            return []
+        
 
 def add_message(recipient_key, attachment):
     # TODO verify that recipient_key belong to a registered peer

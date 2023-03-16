@@ -20,6 +20,8 @@ async def message_dispatch(unpack_msg:UnpackResult):
     """ Selecting the correct protocol base on message type """
     if unpack_msg.message.type == "https://didcomm.org/trust-ping/2.0/ping":
         return await process_trust_ping(unpack_msg)
+    elif unpack_msg.message.type == "https://didcomm.org/routing/2.0/forward":
+        return await process_forward_message(unpack_msg, None, None, None)
     else:
         # For all protocols except ping, store connection and rotate did if needed
         
@@ -53,8 +55,6 @@ async def message_dispatch(unpack_msg:UnpackResult):
             return await process_mediator_message(unpack_msg, sender_did, connection_did, from_prior)
         elif unpack_msg.message.type.startswith("https://didcomm.org/messagepickup/3.0/"):
             return await process_pickup_message(unpack_msg, sender_did, connection_did, from_prior)
-        elif unpack_msg.message.type == "https://didcomm.org/routing/2.0/forward":
-            return await process_forward_message(unpack_msg, sender_did, connection_did, from_prior)
         elif unpack_msg.message.type == "https://didcomm.org/discover-features/2.0/queries":
             return await process_discover_queries(unpack_msg, sender_did, connection_did, from_prior)
         elif unpack_msg.message.type.startswith("https://didcomm.org/action-menu/2.0/"):

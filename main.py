@@ -60,7 +60,7 @@ async def receive_message(request: Request):
     # FIXME REPORT PROBLEM
     except Exception as ex:
         print(ex)
-        raise HTTPException(status_code=400, detail='Malformed Message')
+        raise HTTPException(status_code=400, detail=repr(ex))
     else:
         print(unpack_msg.message.type)
         resp = await message_dispatch(unpack_msg)
