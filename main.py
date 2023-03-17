@@ -3,6 +3,7 @@ import datetime
 import uvicorn
 from fastapi import Request, FastAPI, HTTPException
 from fastapi.responses import FileResponse, Response, RedirectResponse, HTMLResponse
+from fastapi.middleware.cors import CORSMiddleware
 from didcomm.unpack import unpack
 from didcomm.common.resolvers import ResolversConfig
 from didcomm_v2.peer_did import create_peer_did
@@ -22,6 +23,15 @@ secrets_resolver = get_secret_resolver()
 app.state.oob_did = None
 app.state.oob_url = None
 app.state.invitation_url = None
+
+origins = ["*"]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=False,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.on_event("startup")
 async def startup():
@@ -60,7 +70,7 @@ async def receive_message(request: Request):
     # FIXME REPORT PROBLEM
     except Exception as ex:
         print(ex)
-        raise HTTPException(status_code=400, detail=repr(ex))
+        raise HTTPException(status_code=400, detail=str(ex))
     else:
         print(unpack_msg.message.type)
         resp = await message_dispatch(unpack_msg)
