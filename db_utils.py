@@ -136,7 +136,7 @@ def get_message_status(remote_did, recipient_key):
 def get_messages(remote_did, recipient_key,limit):
     if recipient_key:
         # FIX validate that recipient_key belongs to remote_did
-        return db.messages.find({"recipient_key": recipient_key},{"attachment":1}).limit(limit)
+        return list(db.messages.find({"recipient_key": recipient_key},{"attachment":1}).limit(limit))
     else:
         connection = db.connections.find_one({"remote_did":remote_did})
         if "keylist" in connection:
