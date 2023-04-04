@@ -109,7 +109,7 @@ async def redirect_shortened_url(_oobid):
     ''' Redirect short URLs '''
     print(_oobid)
     short_url_reg = get_short_url(_oobid)
-    if short_url_reg and short_url_reg["expires_time"] > int(datetime.datetime.now().timestamp()*1000):
+    if short_url_reg and (short_url_reg["expires_time"] > int(datetime.datetime.now().timestamp()*1000) or short_url_reg["expires_time"] == 0):
         print(short_url_reg["long_url"])
         return RedirectResponse(short_url_reg["long_url"], 301)
     else:

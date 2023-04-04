@@ -25,7 +25,7 @@ async def process_shortened_url_request(unpack_msg: UnpackResult, remote_did, lo
     if goal_code == "shorten.oobv2":
         oobid = str(uuid.uuid4()).replace("-","")
         date = int(datetime.datetime.now().timestamp())*1000
-        expires_time = int(date + requested_validity_seconds * 1000)
+        expires_time = int(date + requested_validity_seconds * 1000) if requested_validity_seconds > 0 else 0
         server_url = os.environ["PUBLIC_URL"] if "PUBLIC_URL" in os.environ  else "http://127.0.0.1:8000"
         short_url = server_url + "/qr" + short_url_slug + "?_oobid=" + oobid
         store_short_url(
@@ -45,7 +45,7 @@ async def process_shortened_url_request(unpack_msg: UnpackResult, remote_did, lo
             type="https://didcomm.org/shorten-url/1.0/shortened-url",
             body={
                 "shortened_url": short_url,
-                "expires_time": int(expires_time/1000)
+                "expires_time": int(expires_time/1000) if expires_time > 0 else None
             },
             from_prior = from_prior
         )

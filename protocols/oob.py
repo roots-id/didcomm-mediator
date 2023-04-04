@@ -34,13 +34,13 @@ def create_oob(did, url):
     #SHORT URL QR CODE
     oobid = str(uuid.uuid4()).replace("-","")
     date = int(datetime.datetime.now().timestamp())*1000
-    expires_time = int(date + (10*365*24*60*60*1000))
+    expires_time = 0
     short_url = url + "/qr?_oobid=" + oobid
     store_short_url(
             {
                 "date": date,
                 "expires_time": expires_time,
-                "requested_validity_seconds": int(10*365*24*60*60),
+                "requested_validity_seconds": 0,
                 "long_url": oob_url,
                 "oobid": oobid,
                 "short_url_slug": "",

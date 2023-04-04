@@ -22,7 +22,6 @@ This mediator also implements the following features that can be used as a playg
 * [Basic Message Protocol 2.0](https://didcomm.org/basicmessage/2.0/)
 * [Shorten URL Protocol 1.0]()
 * [Action Menu Protocol 2.0](https://didcomm.org/action-menu/2.0/)
-* [Question Answer Protocol 2.0]()
 
 ### ToDo's
 Pending features and known issues and missings can be found at the [issues]([issues](https://github.com/roots-id/didcomm-mediator/issues)) section in this repository.

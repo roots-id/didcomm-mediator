@@ -121,16 +121,19 @@ def update_keys(remote_did, updates):
     return updated
 
 def get_message_status(remote_did, recipient_key):
-    if recipient_key:
-        # FIX validate that recipient_key belongs to remote_did
-        count = db.messages.count_documents({"recipient_key": recipient_key},{"attachment":1})
-    else:
-        resp = db.connections.find_one({"remote_did":remote_did})
-        if "keylist" in resp : 
-            recipient_keys = resp["keylist"]
-            count = db.messages.count_documents({"recipient_key": {"$in":recipient_keys}})
+    resp = db.connections.find_one({"remote_did":remote_did})
+    if "keylist" in resp :
+        if recipient_key:
+            if recipient_key in resp["keylist"]:
+                recipient_keys = [recipient_key]
+            else:
+                recipient_keys = []
         else:
-            count = 0
+            recipient_keys = resp["keylist"]
+        count = db.messages.count_documents({"recipient_key": {"$in":recipient_keys}})
+    else:
+        count = 0
+
     return count
 
 def get_messages(remote_did, recipient_key,limit):
