@@ -1,4 +1,4 @@
-didcomm==0.3.1
+didcomm==0.3.2
 peerdid==0.4.0
 -e git+https://github.com/sicpa-dlab/didcomm-demo.git@ec966cae26a8b015a14ed16526a287d1501313cc#egg=didcomm_demo&subdirectory=didcomm-demo-python
 uvicorn==0.17.6
